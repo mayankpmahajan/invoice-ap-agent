@@ -87,8 +87,8 @@ class Stats(BaseModel):
     rejected: int
     running: int
     failed: int
-    approved_amount: float
-    held_amount: float
+    approved_amounts: dict[str, float]  # per currency: never add pounds to dollars
+    held_amounts: dict[str, float]
 
 
 class ReviewIn(BaseModel):
@@ -210,7 +210,7 @@ async def review_run(run_id: str, body: ReviewIn) -> RunSummary:
 @app.get("/api/stats", response_model=Stats)
 async def stats() -> Stats:
     async with Session() as s:
-        rows = (await s.execute(select(Run.status, Run.decision, Run.reviewer_action, Run.total))).all()
+        rows = (await s.execute(select(Run.status, Run.decision, Run.reviewer_action, Run.total, Run.currency))).all()
     final = lambda r: r.reviewer_action or r.decision  # noqa: E731
     done = [r for r in rows if r.status == "completed"]
     return Stats(
@@ -220,9 +220,17 @@ async def stats() -> Stats:
         rejected=sum(final(r) == "rejected" for r in done),
         running=sum(r.status in ("queued", "running") for r in rows),
         failed=sum(r.status == "failed" for r in rows),
-        approved_amount=round(sum(r.total or 0 for r in done if final(r) == "approved"), 2),
-        held_amount=round(sum(r.total or 0 for r in done if final(r) == "needs_review"), 2),
+        approved_amounts=_by_currency([r for r in done if final(r) == "approved"]),
+        held_amounts=_by_currency([r for r in done if final(r) == "needs_review"]),
     )
+
+
+def _by_currency(rows) -> dict[str, float]:
+    out: dict[str, float] = {}
+    for r in rows:
+        cur = (r.currency or "USD").upper()
+        out[cur] = round(out.get(cur, 0) + (r.total or 0), 2)
+    return out
 
 
 # ------------------------------------------------------------------ master data + demo helpers
