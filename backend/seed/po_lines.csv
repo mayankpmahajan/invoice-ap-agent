@@ -1,0 +1,11 @@
+po_number,line_no,sku,description,quantity,unit_price
+PO-2026-0412,1,NW-CH-220,Ergonomic mesh office chair,40,189.00
+PO-2026-0412,2,NW-PP-A4,A4 copy paper 80gsm (ream),200,6.50
+PO-2026-0412,3,NW-TN-58A,HP 58A black toner cartridge,25,92.00
+PO-2026-0430,1,NW-CF-1KG,Arabica coffee beans 1kg,30,24.00
+PO-2026-0430,2,NW-CU-12,Paper cups 12oz (sleeve of 50),80,4.75
+PO-2026-0455,1,MIP-SK-220,Hydraulic pump seal kit HP-220,100,145.00
+PO-2026-0461,1,,FTL shipment Chicago IL to Dallas TX (53ft dry van),12,1850.00
+PO-2026-0470,1,,LTL shipment Midwest region (per pallet),40,165.00
+PO-2026-0478,1,CCS-PLAT-ENT,Platform subscription - Enterprise tier (monthly),12,2400.00
+PO-2026-0478,2,CCS-SUP-PREM,Premium support (monthly),12,350.00

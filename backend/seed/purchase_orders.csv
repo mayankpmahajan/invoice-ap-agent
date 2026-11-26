@@ -1,0 +1,7 @@
+po_number,vendor_id,issue_date,currency,status,description
+PO-2026-0412,V-1001,2026-10-02,USD,open,Q4 office furniture and consumables
+PO-2026-0430,V-1001,2026-10-20,USD,open,Breakroom supplies
+PO-2026-0455,V-1004,2026-09-15,USD,open,Hydraulic seal kits for line 3 overhaul
+PO-2026-0461,V-1002,2026-10-05,USD,open,Full-truckload freight Chicago to Dallas
+PO-2026-0470,V-1002,2026-10-28,USD,open,Less-than-truckload freight Midwest region
+PO-2026-0478,V-1003,2026-09-01,GBP,open,Cloud platform subscription FY26

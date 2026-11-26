@@ -1,0 +1,6 @@
+vendor_id,name,tax_id,country,currency,bank_name,bank_account,status,payment_terms_days
+V-1001,Northwind Office Supplies Inc.,84-1234567,US,USD,JPMorgan Chase,021000021-483920117,approved,30
+V-1002,Brightline Logistics LLC,46-7788990,US,USD,Wells Fargo,121000248-771203945,approved,45
+V-1003,Cobalt Cloud Services Ltd,GB293447102,GB,GBP,NatWest,GB29NWBK60161331926819,approved,30
+V-1004,Meridian Industrial Parts Co.,27-5544321,US,USD,Bank of America,026009593-330188420057,approved,60
+V-1005,Apex Facilities Management,33-1209876,US,USD,Citibank,021000089-559201774,blocked,30
