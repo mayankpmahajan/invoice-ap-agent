@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-26T23:39:14.382095+00:00",
+  "title": "Design System: AP Agent",
+  "extensions": {
+    "colorMeta": {
+      "blotter": {
+        "role": "neutral",
+        "displayName": "Desk Blotter",
+        "canonical": "#d3dbd5",
+        "tonalRamp": [
+          "#222a24",
+          "#3d4a40",
+          "#576a5c",
+          "#718a77",
+          "#91a596",
+          "#b1bfb4",
+          "#d1d9d3",
+          "#f1f4f2"
+        ]
+      },
+      "blotter-deep": {
+        "role": "neutral",
+        "displayName": "Deep Blotter",
+        "canonical": "#c3cdc6",
+        "tonalRamp": [
+          "#232a25",
+          "#3d4a41",
+          "#58695d",
+          "#728979",
+          "#92a497",
+          "#b2beb5",
+          "#d1d9d4",
+          "#f1f3f2"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Bond White",
+        "canonical": "#fdfdfb",
+        "tonalRamp": [
+          "#333319",
+          "#5a5a2d",
+          "#818140",
+          "#a8a854",
+          "#bcbc79",
+          "#d0d0a0",
+          "#e3e3c7",
+          "#f7f7ee"
+        ]
+      },
+      "canary": {
+        "role": "neutral",
+        "displayName": "Canary Stock",
+        "canonical": "#f8eeb4",
+        "tonalRamp": [
+          "#463d07",
+          "#7b6b0c",
+          "#b19910",
+          "#e6c715",
+          "#eed548",
+          "#f3e27d",
+          "#f8eeb2",
+          "#fdfae8"
+        ]
+      },
+      "pink": {
+        "role": "neutral",
+        "displayName": "Pink Stock",
+        "canonical": "#f7d9df",
+        "tonalRamp": [
+          "#3f0d17",
+          "#6f1729",
+          "#9f223b",
+          "#d02c4c",
+          "#dc5974",
+          "#e68a9c",
+          "#f0bac5",
+          "#fbeaed"
+        ]
+      },
+      "goldenrod": {
+        "role": "neutral",
+        "displayName": "Goldenrod Stock",
+        "canonical": "#efd28c",
+        "tonalRamp": [
+          "#433209",
+          "#765810",
+          "#a97f18",
+          "#dda51f",
+          "#e7ba4f",
+          "#eece82",
+          "#f5e2b5",
+          "#fcf6e9"
+        ]
+      },
+      "manila": {
+        "role": "neutral",
+        "displayName": "Manila Stock",
+        "canonical": "#ece2c6",
+        "tonalRamp": [
+          "#392f13",
+          "#655322",
+          "#917730",
+          "#bd9b3f",
+          "#cdb369",
+          "#dbc994",
+          "#eadfc0",
+          "#f9f5ec"
+        ]
+      },
+      "slip": {
+        "role": "neutral",
+        "displayName": "Salmon Slip",
+        "canonical": "#f5e4d6",
+        "tonalRamp": [
+          "#3e240f",
+          "#6c3f1a",
+          "#9b5b26",
+          "#ca7631",
+          "#d8955e",
+          "#e3b48d",
+          "#efd3bc",
+          "#faf2ea"
+        ]
+      },
+      "greenbar": {
+        "role": "neutral",
+        "displayName": "Green-bar Band",
+        "canonical": "#e7f0e6",
+        "tonalRamp": [
+          "#1f301d",
+          "#365433",
+          "#4d7948",
+          "#659d5e",
+          "#87b482",
+          "#aacaa6",
+          "#cde0cb",
+          "#f0f5ef"
+        ]
+      },
+      "form": {
+        "role": "secondary",
+        "displayName": "Drop-out Form Teal",
+        "canonical": "#2b5c55",
+        "tonalRamp": [
+          "#183430",
+          "#2b5c55",
+          "#3d847a",
+          "#50ab9e",
+          "#76bfb5",
+          "#9ed2ca",
+          "#c6e4e0",
+          "#eef7f6"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Form Rule",
+        "canonical": "#a9c0b9",
+        "tonalRamp": [
+          "#202c29",
+          "#394e47",
+          "#526f66",
+          "#6a9185",
+          "#8baaa1",
+          "#adc3bc",
+          "#cfdcd8",
+          "#f0f4f3"
+        ]
+      },
+      "rule-soft": {
+        "role": "neutral",
+        "displayName": "Soft Rule",
+        "canonical": "#d6e2de",
+        "tonalRamp": [
+          "#202d28",
+          "#384f47",
+          "#507166",
+          "#689385",
+          "#8aaca1",
+          "#acc4bc",
+          "#cedcd8",
+          "#f0f4f3"
+        ]
+      },
+      "carbon": {
+        "role": "primary",
+        "displayName": "Carbon Copy Violet",
+        "canonical": "#312c86",
+        "tonalRamp": [
+          "#15133a",
+          "#252165",
+          "#353091",
+          "#453ebd",
+          "#6e68cd",
+          "#9894dc",
+          "#c2c0ea",
+          "#edecf9"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Desk Ink",
+        "canonical": "#1b2220",
+        "tonalRamp": [
+          "#222b28",
+          "#3c4b47",
+          "#556c65",
+          "#6f8c84",
+          "#8fa6a0",
+          "#b0c0bb",
+          "#d0dad7",
+          "#f1f4f3"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#4f5d59",
+        "tonalRamp": [
+          "#232928",
+          "#3e4946",
+          "#596864",
+          "#738882",
+          "#93a39e",
+          "#b2beba",
+          "#d2d9d7",
+          "#f1f3f3"
+        ]
+      },
+      "stamp-ok": {
+        "role": "tertiary",
+        "displayName": "Approved Green",
+        "canonical": "#17683f",
+        "tonalRamp": [
+          "#0e3f26",
+          "#186e43",
+          "#239e60",
+          "#2ece7d",
+          "#5bdb9a",
+          "#8be5b7",
+          "#baf0d5",
+          "#eafaf2"
+        ]
+      },
+      "stamp-hold": {
+        "role": "tertiary",
+        "displayName": "Hold Orange",
+        "canonical": "#b04a06",
+        "tonalRamp": [
+          "#4a1f03",
+          "#823704",
+          "#bb4f06",
+          "#f36608",
+          "#f8883d",
+          "#faab76",
+          "#fccdae",
+          "#fef0e6"
+        ]
+      },
+      "stamp-void": {
+        "role": "tertiary",
+        "displayName": "Void Red",
+        "canonical": "#b3261e",
+        "tonalRamp": [
+          "#420e0b",
+          "#731913",
+          "#a5231c",
+          "#d72e24",
+          "#e25b53",
+          "#eb8b85",
+          "#f3bab7",
+          "#fbeae9"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page title."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Vendor name on the voucher cover."
+      },
+      "title": {
+        "displayName": "Sheet Title",
+        "purpose": "Sheet header strips."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reasons, check detail, table text."
+      },
+      "label": {
+        "displayName": "Printed Label",
+        "purpose": "Form labels and column heads in drop-out teal; never a section tag."
+      },
+      "typed": {
+        "displayName": "Typed Value",
+        "purpose": "Every system-produced value: money, IDs, dates, counts."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 1px 1px rgb(27 34 32 / .06), 0 10px 24px -14px rgb(27 34 32 / .35)",
+        "purpose": "A sheet lying on the blotter."
+      },
+      {
+        "name": "control-tape",
+        "value": "0 1px 1px rgb(27 34 32 / .06), 0 8px 18px -12px rgb(27 34 32 / .4)",
+        "purpose": "Batch control tape strip."
+      },
+      {
+        "name": "tab-stock",
+        "value": "2px -1px 3px -2px rgb(27 34 32 / .25)",
+        "purpose": "Overlapping packet copy tabs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "stamp-strike",
+        "value": "380ms cubic-bezier(.2, .9, .25, 1)",
+        "purpose": "Stamp strikes the voucher (scale 1.6 to .96 to 1, blur clears) only when a decision lands live; off under reduced motion."
+      },
+      {
+        "name": "punch-in",
+        "value": "180ms ease-out",
+        "purpose": "Routing-slip time stamp drops 3px into place."
+      },
+      {
+        "name": "press",
+        "value": "150ms",
+        "purpose": "Stamp button lift and press, copy tab rise."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "container",
+        "value": "1240px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Carbon-filled square button for the main non-decision action.",
+      "html": "<button class=\"ds-btn-primary\">Run test batch</button>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-btn-primary{display:inline-flex;align-items:center;gap:6px;background:var(--color-carbon,#312c86);color:#fff;border:0;border-radius:0;padding:8px 16px;font:600 14px var(--font-sans,Archivo,sans-serif);cursor:pointer}.ds-btn-primary:hover{background:#241f6b}.ds-btn-primary:focus-visible{outline:2px solid var(--color-carbon,#312c86);outline-offset:2px}.ds-btn-primary:disabled{opacity:.5}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Paper button with hairline rule border; border turns form teal on hover.",
+      "html": "<button class=\"ds-btn-quiet\">Download</button>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-btn-quiet{display:inline-flex;align-items:center;gap:6px;background:var(--color-paper,#fdfdfb);color:var(--color-ink,#1b2220);border:1px solid var(--color-rule,#a9c0b9);border-radius:0;padding:8px 12px;font:600 14px var(--font-sans,Archivo,sans-serif);cursor:pointer}.ds-btn-quiet:hover{border-color:var(--color-form,#2b5c55)}.ds-btn-quiet:focus-visible{outline:2px solid var(--color-carbon,#312c86);outline-offset:2px}"
+    },
+    {
+      "name": "Stamp Button",
+      "kind": "button",
+      "refersTo": "stamp-button-approve",
+      "description": "The reviewer's commit gesture: a rubber-stamp face in the decision's ink.",
+      "html": "<div style=\"display:flex;gap:8px\"><button class=\"ds-stamp-btn ds-ok\"><span class=\"ds-stamp-word\">Approved</span><span class=\"ds-stamp-sub\">Pay this invoice</span></button><button class=\"ds-stamp-btn ds-void\"><span class=\"ds-stamp-word\">Void</span><span class=\"ds-stamp-sub\">Do not pay</span></button></div>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-stamp-btn{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:124px;padding:6px 16px 8px;background:transparent;border:2px solid currentColor;border-radius:0;cursor:pointer;font-family:var(--font-sans,Archivo,sans-serif);transition:transform 150ms}.ds-ok{color:var(--color-stamp-ok,#17683f)}.ds-void{color:var(--color-stamp-void,#b3261e)}.ds-stamp-word{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;line-height:1;font-variation-settings:'wdth' 118}.ds-stamp-sub{font-size:11px;font-weight:600;color:var(--color-ink,#1b2220)}.ds-stamp-btn:hover{transform:translateY(-2px)}.ds-stamp-btn:active{transform:translateY(2px)}.ds-stamp-btn:focus-visible{outline:2px solid var(--color-carbon,#312c86);outline-offset:2px}"
+    },
+    {
+      "name": "Form Box",
+      "kind": "custom",
+      "refersTo": "form-box",
+      "description": "Ruled cell on a printed form: teal corner label, carbon typed value.",
+      "html": "<div class=\"ds-formgrid\"><div class=\"ds-formbox\"><div class=\"ds-label\">Invoice no.</div><div class=\"ds-typed\">INV-20419</div></div><div class=\"ds-formbox\"><div class=\"ds-label\">Total</div><div class=\"ds-typed\">$12,480.00</div></div></div>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-formgrid{display:grid;grid-template-columns:1fr 1fr;border-left:1px solid var(--color-rule,#a9c0b9);border-top:1px solid var(--color-rule,#a9c0b9);background:var(--color-paper,#fdfdfb)}.ds-formbox{padding:6px 12px 8px;border-right:1px solid var(--color-rule,#a9c0b9);border-bottom:1px solid var(--color-rule,#a9c0b9)}.ds-label{font:600 10px/1.1 var(--font-sans,Archivo,sans-serif);letter-spacing:.08em;text-transform:uppercase;color:var(--color-form,#2b5c55);font-variation-settings:'wdth' 75}.ds-typed{margin-top:4px;font:400 15px var(--font-mono,monospace);color:var(--color-carbon,#312c86);font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Underline Input",
+      "kind": "input",
+      "refersTo": "form-box",
+      "description": "Typed field on a form line: underline only, carbon mono.",
+      "html": "<label><span class=\"ds-label\">Reviewer note</span><input class=\"ds-input\" placeholder=\"Why\"></label>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-label{display:block;font:600 10px/1.1 var(--font-sans,Archivo,sans-serif);letter-spacing:.08em;text-transform:uppercase;color:var(--color-form,#2b5c55)}.ds-input{margin-top:4px;width:240px;background:transparent;border:0;border-bottom:1px solid var(--color-rule,#a9c0b9);padding:4px 0;font:14px var(--font-mono,monospace);color:var(--color-carbon,#312c86);caret-color:var(--color-carbon,#312c86);outline:none}.ds-input:focus{border-bottom-color:var(--color-carbon,#312c86)}.ds-input::placeholder{color:var(--color-muted,#4f5d59)}"
+    },
+    {
+      "name": "Folder Tab Nav",
+      "kind": "nav",
+      "refersTo": "copy-tab-active",
+      "description": "File-folder tabs sitting on the header rule; the active tab joins the page.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-tab ds-active\" href=\"#\">Voucher register</a><a class=\"ds-tab\" href=\"#\">Vendors &amp; POs</a></nav>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-nav{display:flex;gap:4px;border-bottom:1px solid var(--color-rule,#a9c0b9);background:var(--color-blotter,#d3dbd5);padding:0 8px}.ds-tab{margin-bottom:-1px;border:1px solid transparent;border-bottom:0;padding:8px 16px;font:600 14px var(--font-sans,Archivo,sans-serif);color:var(--color-muted,#4f5d59);text-decoration:none}.ds-tab:hover{color:var(--color-ink,#1b2220)}.ds-tab.ds-active{background:var(--color-paper,#fdfdfb);border-color:var(--color-rule,#a9c0b9);color:var(--color-ink,#1b2220)}.ds-tab:focus-visible{outline:2px solid var(--color-carbon,#312c86);outline-offset:2px}"
+    },
+    {
+      "name": "Sheet",
+      "kind": "card",
+      "refersTo": "sheet",
+      "description": "A sheet of form stock lying on the blotter, with a ruled header strip.",
+      "html": "<section class=\"ds-sheet\"><div class=\"ds-sheet-head\">Routing slip</div><div class=\"ds-sheet-body\">Read PDF &nbsp; <span style=\"font-family:var(--font-mono,monospace);color:var(--color-carbon,#312c86)\">0.8 s</span></div></section>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-sheet{background:var(--color-slip,#f5e4d6);border:1px solid var(--color-rule,#a9c0b9);border-radius:0;box-shadow:0 1px 1px rgb(27 34 32/.06),0 10px 24px -14px rgb(27 34 32/.35);max-width:300px;font-family:var(--font-sans,Archivo,sans-serif);color:var(--color-ink,#1b2220)}.ds-sheet-head{padding:10px 16px;border-bottom:1px solid var(--color-rule,#a9c0b9);font-weight:800;font-size:18px;letter-spacing:-.01em;font-variation-settings:'wdth' 112}.ds-sheet-body{padding:10px 16px;font-size:14px}"
+    },
+    {
+      "name": "Green-bar Register Row",
+      "kind": "custom",
+      "refersTo": "sheet",
+      "description": "Continuous-form register: rows banded in pairs, canary on hover.",
+      "html": "<table class=\"ds-greenbar\"><tbody><tr><td>Acme Supply</td><td class=\"ds-num\">$4,200.00</td></tr><tr><td>Northwind</td><td class=\"ds-num\">$880.50</td></tr><tr><td>Globex</td><td class=\"ds-num\">$12,480.00</td></tr><tr><td>Initech</td><td class=\"ds-num\">$310.00</td></tr></tbody></table>",
+      "css": ":root{--color-blotter:#d3dbd5;--color-paper:#fdfdfb;--color-canary:#f8eeb4;--color-slip:#f5e4d6;--color-greenbar:#e7f0e6;--color-form:#2b5c55;--color-rule:#a9c0b9;--color-carbon:#312c86;--color-ink:#1b2220;--color-muted:#4f5d59;--color-stamp-ok:#17683f;--color-stamp-void:#b3261e;--font-sans:'Archivo',ui-sans-serif,system-ui,sans-serif;--font-mono:'Sometype Mono',ui-monospace,monospace}.ds-greenbar{border-collapse:collapse;width:360px;background:var(--color-paper,#fdfdfb);font:14px var(--font-sans,Archivo,sans-serif);color:var(--color-ink,#1b2220)}.ds-greenbar td{padding:10px 16px}.ds-greenbar tr:nth-child(4n+1),.ds-greenbar tr:nth-child(4n+2){background:var(--color-greenbar,#e7f0e6)}.ds-greenbar tr:hover{background:rgb(248 238 180/.6)}.ds-num{text-align:right;font-family:var(--font-mono,monospace);color:var(--color-carbon,#312c86);font-variant-numeric:tabular-nums}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Voucher Packet",
+    "overview": "**Creative North Star: \"The Voucher Packet\"**\n\nEvery invoice is a paper voucher packet lying on a grey-green desk blotter: an invoice copy, a PO copy and a check sheet stapled behind a voucher cover, routed desk to desk on a salmon routing slip, then rubber-stamped. Surfaces are sheets of multipart form stock, never cards. Printed form furniture (labels, rules, corner boxes) is in drop-out teal; anything the system \"typed\" onto the form is carbon blue-violet mono; decisions are rubber-stamp ink.\n\nThe register is green-bar continuous-form paper with tractor-feed margins; batch totals sit on an adding-machine control tape with a torn right edge; the test batch is manila stock. Density is clerical: hairline rules, tight ruled cells, exact figures. The world refuses the white-card SaaS dashboard with stat tiles.",
+    "keyCharacteristics": [
+      "Paper stocks carry meaning: each packet copy has its own colored stock.",
+      "Three inks with fixed jobs: teal prints the form, carbon fills it in, stamp inks decide.",
+      "Square corners and hairline rules everywhere; depth only as paper lying on paper.",
+      "The decision is a raster rubber-stamp impression, and its one authored motion is the strike."
+    ],
+    "rules": [
+      {
+        "name": "The Three Inks Rule",
+        "body": "Teal is printed, carbon is typed, stamp inks decide. A value the system extracted or computed is never teal; a label is never carbon; green, orange and red appear only where a decision, check outcome or confidence is being stated.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stock Means Copy Rule",
+        "body": "A sheet's paper color says which copy of the packet it is. Don't recolor a stock for decoration or reuse it for a different copy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Typed Value Rule",
+        "body": "Money, identifiers, dates and counts are set in the mono with tabular numerals, exactly as printed. Amounts right-align in tables.",
+        "section": "typography"
+      },
+      {
+        "name": "The Label Is Furniture Rule",
+        "body": "The condensed caps label names a box, column or field on the form. It never sits above a heading as a section tag.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Only Rule",
+        "body": "Only things that are paper cast shadows, and only soft ones. Buttons, inputs and marks are flat ink.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** set every value the system produced in carbon Sometype Mono with tabular numerals, exactly as printed.",
+      "**Do** give each packet copy its own paper stock and keep the mapping fixed.",
+      "**Do** express a decision as a stamp impression or stamp-face button, in the stamp ink for that decision.",
+      "**Do** keep corners square and borders 1px hairlines in form rule.",
+      "**Do** use the stamp strike (380ms, overshoot settle) only when a decision lands while the reviewer is watching, and drop it under reduced motion."
+    ],
+    "donts": [
+      "**Don't** build white rounded cards, stat tiles or dashboard KPI blocks; totals belong on the control tape.",
+      "**Don't** use stamp green, orange or red for decoration, links or headings.",
+      "**Don't** put the condensed caps label above a heading as a section tag.",
+      "**Don't** give buttons, inputs or marks a shadow; only paper casts one."
+    ]
+  }
+}
