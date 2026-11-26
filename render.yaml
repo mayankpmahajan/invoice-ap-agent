@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: invoice-ap-agent
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/stats
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false   # set in the Render dashboard, never committed
+      - key: DATA_DIR
+        value: /tmp/ap-data   # free plan: no persistent disk; history resets on redeploy
