@@ -1,188 +1,206 @@
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
-import { FileText, Play, RotateCcw, Search, Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, RotateCcw, Search } from "lucide-react";
 import { api, unwrap } from "../api/client";
 import { config } from "../config";
-import { Card, DecisionBadge, Empty, ErrorPanel, Skeleton, cx, money } from "../components/ui";
+import { Empty, ErrorNote, Skeleton, Stamp, cx, money, moneyByCur, stampKey } from "../components/ui";
 
 const FILTERS = [
   { key: "", label: "All" },
   { key: "approved", label: "Approved" },
-  { key: "needs_review", label: "Needs review" },
-  { key: "rejected", label: "Rejected" },
+  { key: "needs_review", label: "On hold" },
+  { key: "rejected", label: "Void" },
 ];
+
+const prettySample = (n: string) => n.replace(/\.pdf$/, "").replace(/^\d+_/, "").replace(/_/g, " ");
 
 export default function Dashboard() {
   const [filter, setFilter] = useState("");
   const [q, setQ] = useState("");
+  const nav = useNavigate();
   const qc = useQueryClient();
 
-  const stats = useQuery({
-    queryKey: ["stats"], refetchInterval: config.dashboardRefreshMs,
-    queryFn: () => unwrap(api.GET("/api/stats")),
-  });
+  const stats = useQuery({ queryKey: ["stats"], refetchInterval: config.dashboardRefreshMs, queryFn: () => unwrap(api.GET("/api/stats")) });
   const runs = useQuery({
     queryKey: ["runs", filter, q], refetchInterval: config.dashboardRefreshMs,
-    queryFn: () => unwrap(api.GET("/api/runs", { params: { query: {
-      decision: filter || undefined, q: q || undefined, limit: config.runsPageSize } } })),
+    queryFn: () => unwrap(api.GET("/api/runs", { params: { query: { decision: filter || undefined, q: q || undefined, limit: config.runsPageSize } } })),
   });
-  const reset = useMutation({
-    mutationFn: () => unwrap(api.POST("/api/reset")),
-    onSuccess: () => qc.invalidateQueries(),
-  });
-
+  const reset = useMutation({ mutationFn: () => unwrap(api.POST("/api/reset")), onSuccess: () => qc.invalidateQueries() });
   const s = stats.data;
-  const tiles = [
-    { label: "Processed", value: s?.total, sub: s ? `${s.running} running · ${s.failed} failed` : "" },
-    { label: "Approved", value: s?.approved, sub: s ? money(s.approved_amount) : "", tone: "text-emerald-700" },
-    { label: "Needs review", value: s?.needs_review, sub: s ? `${money(s.held_amount)} on hold` : "", tone: "text-amber-700" },
-    { label: "Rejected", value: s?.rejected, sub: "duplicates, unknown vendors", tone: "text-rose-700" },
-  ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Invoices</h1>
-          <p className="text-sm text-slate-500">Drop a vendor invoice PDF; the agent reads it, matches it to a PO and decides.</p>
+    <div className="space-y-7">
+      {/* Batch control: the adding-machine control tape an AP desk reconciles each batch against. */}
+      <section aria-label="Batch control totals" className="flex flex-wrap items-stretch gap-x-6 gap-y-3">
+        <div className="flex flex-col justify-center">
+          <h1 className="title text-[28px] leading-none">Voucher register</h1>
+          <button onClick={() => reset.mutate()} disabled={reset.isPending}
+            className="mt-2 inline-flex items-center gap-1.5 self-start text-xs font-semibold text-muted hover:text-ink disabled:opacity-50">
+            <RotateCcw className="size-3.5" /> Clear demo history
+          </button>
         </div>
-        <button onClick={() => reset.mutate()} disabled={reset.isPending}
-          className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100">
-          <RotateCcw className="size-3.5" /> Reset demo history
-        </button>
-      </div>
-      {reset.isError && <ErrorPanel message={(reset.error as Error).message} />}
+        <div className="relative flex min-w-0 basis-full flex-wrap items-center gap-x-1 bg-paper md:basis-0 md:flex-1 py-2 pl-3 pr-4 shadow-[0_1px_1px_rgb(27_34_32/.06),0_8px_18px_-12px_rgb(27_34_32/.4)] [clip-path:polygon(0_0,100%_0,calc(100%-6px)_50%,100%_100%,0_100%)]">
+          {stats.isLoading ? <Skeleton className="h-10 flex-1" /> : (
+            <>
+              <Tally n={s?.total} label="received" />
+              <Tally n={s?.approved} label="approved" amount={moneyByCur(s?.approved_amounts)} tone="text-stamp-ok" />
+              <Tally n={s?.needs_review} label="on hold" amount={moneyByCur(s?.held_amounts)} tone="text-stamp-hold" />
+              <Tally n={s?.rejected} label="void" tone="text-stamp-void" />
+              {!!s?.running && <Tally n={s.running} label="in process" tone="text-carbon" />}
+              {!!s?.failed && <Tally n={s.failed} label="errors" />}
+            </>
+          )}
+        </div>
+      </section>
+      {(stats.isError || reset.isError) && <ErrorNote message={((stats.error ?? reset.error) as Error).message} onRetry={() => stats.refetch()} />}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {tiles.map((t) => (
-          <div key={t.label} className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-            <div className="text-xs font-medium text-slate-500">{t.label}</div>
-            {stats.isLoading ? <Skeleton className="mt-2 h-7 w-12" /> :
-              <div className={cx("mt-1 text-2xl font-semibold tabular-nums", t.tone)}>{t.value ?? "—"}</div>}
-            <div className="truncate text-xs text-slate-500">{t.sub}</div>
-          </div>
-        ))}
-      </div>
-      {stats.isError && <ErrorPanel message="Could not load stats." onRetry={() => stats.refetch()} />}
+      <Intake onStarted={(id) => nav(`/runs/${id}`)} />
 
-      <Launcher />
-
-      <Card title="History" action={
-        <div className="flex items-center gap-2">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-2 top-1.5 size-3.5 text-slate-400" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Vendor, invoice #, file"
-              className="w-48 rounded-md border border-slate-200 py-1 pl-7 pr-2 text-xs outline-none focus:border-slate-400" />
-          </div>
-          <div className="flex rounded-md bg-slate-100 p-0.5">
-            {FILTERS.map((f) => (
-              <button key={f.key} onClick={() => setFilter(f.key)}
-                className={cx("rounded px-2 py-1 text-xs font-medium", filter === f.key ? "bg-white shadow-sm" : "text-slate-500")}>
-                {f.label}
-              </button>
-            ))}
+      <section className="sheet grid grid-cols-[22px_minmax(0,1fr)_22px]">
+        <div aria-hidden className="tractor border-r border-dashed border-rule" />
+        <div className="min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-2.5">
+          <h2 className="title text-lg">Register</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="relative">
+              <span className="sr-only">Search register</span>
+              <Search className="pointer-events-none absolute left-2 top-2 size-3.5 text-form" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search"
+                className="typed w-44 border-b border-rule bg-transparent py-1 pl-7 pr-1 text-sm outline-none placeholder:text-muted focus:border-carbon" />
+            </label>
+            <div className="flex border border-rule" role="group" aria-label="Filter by stamp">
+              {FILTERS.map((f) => (
+                <button key={f.key} onClick={() => setFilter(f.key)} aria-pressed={filter === f.key}
+                  className={cx("px-2.5 py-1 text-xs font-semibold", filter === f.key ? "bg-ink text-paper" : "text-muted hover:text-ink")}>
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      }>
         {runs.isLoading ? (
-          <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-10" />)}</div>
+          <div className="space-y-px p-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-11" />)}</div>
         ) : runs.isError ? (
-          <ErrorPanel message="Could not load invoice history." onRetry={() => runs.refetch()} />
+          <div className="p-4"><ErrorNote message="the register could not be loaded." onRetry={() => runs.refetch()} /></div>
         ) : !runs.data?.length ? (
-          <Empty>No invoices yet. Upload a PDF or run a demo sample above.</Empty>
+          <div className="p-4"><Empty title={filter || q ? "No vouchers match" : "The register is empty"}>
+            {filter || q ? "Clear the search or filter to see every voucher." : "Drop an invoice in the in-tray, or run the test batch above."}</Empty></div>
         ) : (
-          <div className="-mx-4 -my-4 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-left text-xs text-slate-500">
-                <tr className="border-b border-slate-100">
-                  {["Invoice", "Vendor", "PO", "Total", "Status", "Reason", "Received"].map((h) => (
-                    <th key={h} className="px-4 py-2.5 font-medium">{h}</th>
+          <div className="overflow-x-auto">
+            <table className="greenbar w-full min-w-[860px] text-sm">
+              <thead>
+                <tr className="border-b border-rule text-left">
+                  {["Voucher", "Vendor / invoice", "PO", "Amount", "Stamp", "Reason", "Received"].map((h, i) => (
+                    <th key={h} className={cx("label px-4 py-2 font-semibold", i === 3 && "text-right")}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {runs.data.map((r) => (
-                  <tr key={r.id} className="border-b border-slate-50 hover:bg-slate-50">
-                    <td className="px-4 py-2.5">
-                      <Link to={`/runs/${r.id}`} className="font-medium text-slate-900 hover:underline">
-                        {r.invoice_number ?? r.filename}
-                      </Link>
-                      <div className="text-xs text-slate-400">{r.filename}{r.pdf_kind === "scanned" ? " · scanned" : ""}</div>
-                    </td>
-                    <td className="px-4 py-2.5 text-slate-700">{r.vendor_name ?? "—"}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-slate-600">{r.po_number ?? "—"}</td>
-                    <td className="px-4 py-2.5 tabular-nums">{money(r.total, r.currency)}</td>
-                    <td className="px-4 py-2.5"><DecisionBadge status={r.status} decision={r.decision} reviewer={r.reviewer_action} /></td>
-                    <td className="max-w-xs truncate px-4 py-2.5 text-xs text-slate-500" title={r.decision_summary ?? r.error ?? ""}>
-                      {r.status === "completed" ? r.decision_summary : r.error ?? r.current_stage}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-slate-500">{new Date(r.created_at).toLocaleString()}</td>
-                  </tr>
-                ))}
+                {runs.data.map((r) => {
+                  const k = stampKey(r.status, r.decision, r.reviewer_action);
+                  return (
+                    <tr key={r.id} onClick={() => nav(`/runs/${r.id}`)}
+                      className="cursor-pointer hover:!bg-canary/60">
+                      <td className="typed px-4 py-2.5 text-xs text-muted">
+                        <a href={`/runs/${r.id}`} onClick={(e) => { e.preventDefault(); nav(`/runs/${r.id}`); }} className="hover:underline">{r.id.slice(0, 6).toUpperCase()}</a>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <div className="font-semibold">{r.vendor_name ?? r.filename}</div>
+                        <div className="typed text-xs">{r.invoice_number ?? "—"}{r.pdf_kind === "scanned" && <span className="ml-2 text-muted">scanned</span>}</div>
+                      </td>
+                      <td className="typed px-4 py-2.5 text-xs">{r.po_number ?? "—"}</td>
+                      <td className="typed tnum px-4 py-2.5 text-right">{money(r.total, r.currency)}</td>
+                      <td className="px-4 py-2.5"><Stamp k={k} size="sm" rot={-3} /></td>
+                      <td className="max-w-[320px] px-4 py-2.5 text-xs text-muted">
+                        <span className="line-clamp-2">{r.status === "completed" ? (r.reviewer_action ? `Reviewer ${r.reviewer_action}. ${r.reviewer_note ?? ""}` : r.decision_summary) : r.error ?? `At: ${r.current_stage ?? "queued"}`}</span>
+                      </td>
+                      <td className="typed whitespace-nowrap px-4 py-2.5 text-xs text-muted">{fmtTime(r.created_at)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
-      </Card>
+        </div>
+        <div aria-hidden className="tractor border-l border-dashed border-rule" />
+      </section>
     </div>
   );
 }
 
-function Launcher() {
-  const nav = useNavigate();
+const fmtTime = (iso: string) => new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+function Tally({ n, label, amount, tone }: { n?: number; label: string; amount?: string; tone?: string }) {
+  return (
+    <div className="flex items-baseline gap-2 whitespace-nowrap border-r border-dotted border-rule px-3 py-1 last:border-r-0">
+      <span className={cx("typed tnum text-[22px] leading-none", tone)}>{n ?? 0}</span>
+      <span className="text-xs font-semibold">{label}</span>
+      {amount && <span className="typed tnum text-xs text-muted">{amount}</span>}
+    </div>
+  );
+}
+
+function Intake({ onStarted }: { onStarted: (id: string) => void }) {
   const input = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const samples = useQuery({ queryKey: ["samples"], queryFn: () => unwrap(api.GET("/api/samples")) });
-
   const upload = useMutation({
     mutationFn: (file: File) => {
       const body = new FormData();
       body.append("file", file);
       return unwrap(api.POST("/api/runs", { body: body as unknown as { file: string }, bodySerializer: (b) => b as unknown as FormData }));
     },
-    onSuccess: (r) => nav(`/runs/${r.id}`),
+    onSuccess: (r) => onStarted(r.id),
   });
   const sample = useMutation({
     mutationFn: (name: string) => unwrap(api.POST("/api/samples/{name}/run", { params: { path: { name } } })),
-    onSuccess: (r) => nav(`/runs/${r.id}`),
+    onSuccess: (r) => onStarted(r.id),
   });
-
   const err = (upload.error ?? sample.error) as Error | null;
+
   return (
-    <div className="grid gap-3 lg:grid-cols-5">
-      <div
-        onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-        onDragLeave={() => setDrag(false)}
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <button type="button"
+        onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)}
         onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files[0]; if (f) upload.mutate(f); }}
         onClick={() => input.current?.click()}
-        className={cx("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed bg-white px-6 py-8 text-center lg:col-span-2",
-          drag ? "border-indigo-400 bg-indigo-50/50" : "border-slate-300 hover:border-slate-400")}>
-        <Upload className="size-6 text-slate-400" />
-        <div className="text-sm font-medium">{upload.isPending ? "Uploading…" : "Drop an invoice PDF or click to browse"}</div>
-        <div className="text-xs text-slate-500">Digital or scanned · up to 20 MB</div>
+        className={cx("group relative flex min-h-[120px] flex-col justify-between gap-4 border-2 border-dashed p-5 text-left transition-colors",
+          drag ? "border-carbon bg-paper" : "border-form/40 bg-blotter-deep/40 hover:border-form hover:bg-paper/60")}>
+        <span className="title text-2xl leading-tight">In-tray</span>
+        <span>
+          <span className="block text-sm font-semibold">{upload.isPending ? "Taking the invoice…" : "Drop a vendor invoice here, or choose a file"}</span>
+          <span className="mt-0.5 block text-xs text-muted">PDF, digital or scanned, up to 20 MB. It opens straight into its voucher.</span>
+        </span>
         <input ref={input} type="file" accept="application/pdf" className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); e.target.value = ""; }} />
-      </div>
-      <Card title="Demo invoices" className="lg:col-span-3">
-        {samples.isLoading ? <Skeleton className="h-24" /> : samples.isError ? (
-          <ErrorPanel message="Could not load samples." onRetry={() => samples.refetch()} />
-        ) : !samples.data?.length ? <Empty>No sample PDFs found.</Empty> : (
-          <ul className="grid gap-1.5 sm:grid-cols-2">
-            {samples.data.map((n) => (
-              <li key={n}>
+      </button>
+
+      <section className="sheet bg-manila">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 border-b border-[#cdbf96] px-4 py-2.5">
+          <h2 className="title text-lg">Test batch</h2>
+          <span className="text-xs text-[#5e5230]">Run in order: later invoices depend on earlier ones</span>
+        </div>
+        {samples.isLoading ? <div className="p-4"><Skeleton className="h-28" /></div> : samples.isError ? (
+          <div className="p-4"><ErrorNote message="sample invoices could not be listed." onRetry={() => samples.refetch()} /></div>
+        ) : !samples.data?.length ? <div className="p-4"><Empty title="No sample invoices">Add PDFs to the samples folder.</Empty></div> : (
+          <ol className="grid sm:grid-cols-2">
+            {samples.data.map((n, i) => (
+              <li key={n} className={cx("border-[#d9cca6]", i % 2 === 0 && "sm:border-r", i >= 2 && "sm:border-t", i >= 1 && "max-sm:border-t")}>
                 <button onClick={() => sample.mutate(n)} disabled={sample.isPending}
-                  className="group flex w-full items-center gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 text-left text-xs hover:border-slate-300 hover:bg-slate-50">
-                  <FileText className="size-3.5 shrink-0 text-slate-400" />
-                  <span className="truncate font-mono">{n.replace(".pdf", "")}</span>
-                  <Play className="ml-auto size-3.5 shrink-0 text-slate-300 group-hover:text-indigo-600" />
+                  className="group flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-paper/60 disabled:opacity-50">
+                  <span className="typed w-5 text-xs text-[#5e5230]">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium first-letter:uppercase">{prettySample(n)}</span>
+                  <ArrowRight className="size-4 text-rule group-hover:text-carbon" />
                 </button>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
-      </Card>
-      {err && <div className="lg:col-span-5"><ErrorPanel message={err.message} /></div>}
+      </section>
+      {err && <div className="lg:col-span-2"><ErrorNote message={err.message} /></div>}
     </div>
   );
 }
+

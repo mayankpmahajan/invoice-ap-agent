@@ -1,39 +1,36 @@
 import { NavLink, Route, Routes } from "react-router-dom";
-import { Database, LayoutDashboard, ReceiptText } from "lucide-react";
 import Dashboard from "./pages/Dashboard";
 import RunView from "./pages/RunView";
 import MasterData from "./pages/MasterData";
 import { cx } from "./components/ui";
 
 const NAV = [
-  { to: "/", label: "Invoices", icon: LayoutDashboard },
-  { to: "/master", label: "Vendors & POs", icon: Database },
+  { to: "/", label: "Voucher register" },
+  { to: "/master", label: "Vendors & POs" },
 ];
 
 export default function App() {
   return (
-    <div className="flex min-h-screen">
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
-        <div className="flex items-center gap-2 px-5 py-5">
-          <div className="grid size-8 place-items-center rounded-lg bg-slate-900 text-white">
-            <ReceiptText className="size-4" />
+    <div className="min-h-screen">
+      <header className="border-b border-blotter-deep">
+        <div className="mx-auto flex max-w-[1240px] flex-wrap items-end gap-x-10 gap-y-2 px-4 pt-5 md:px-8">
+          <div className="pb-3">
+            <div className="title text-xl leading-none">AP Agent</div>
+            <div className="mt-1 text-xs text-muted">Reads invoices. Rules decide. Every reason on file.</div>
           </div>
-          <div>
-            <div className="text-sm font-semibold leading-tight">AP Agent</div>
-            <div className="text-xs text-slate-500">Invoice → decision</div>
-          </div>
+          <nav className="flex gap-1">
+            {NAV.map(({ to, label }) => (
+              <NavLink key={to} to={to} end={to === "/"}
+                className={({ isActive }) => cx(
+                  "-mb-px border border-b-0 px-4 py-2 text-sm font-semibold",
+                  isActive ? "border-rule bg-paper text-ink" : "border-transparent text-muted hover:text-ink")}>
+                {label}
+              </NavLink>
+            ))}
+          </nav>
         </div>
-        <nav className="flex flex-col gap-0.5 px-3">
-          {NAV.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} end={to === "/"}
-              className={({ isActive }) => cx("flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium",
-                isActive ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50")}>
-              <Icon className="size-4" /> {label}
-            </NavLink>
-          ))}
-        </nav>
-      </aside>
-      <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
+      </header>
+      <main className="mx-auto max-w-[1240px] px-4 py-7 md:px-8">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/runs/:id" element={<RunView />} />

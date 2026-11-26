@@ -350,10 +350,14 @@ export interface components {
             running: number;
             /** Failed */
             failed: number;
-            /** Approved Amount */
-            approved_amount: number;
-            /** Held Amount */
-            held_amount: number;
+            /** Approved Amounts */
+            approved_amounts: {
+                [key: string]: number;
+            };
+            /** Held Amounts */
+            held_amounts: {
+                [key: string]: number;
+            };
         };
         /** ValidationError */
         ValidationError: {

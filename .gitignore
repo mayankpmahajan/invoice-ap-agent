@@ -4,3 +4,4 @@ node_modules/
 frontend/dist/
 .venv/
 __pycache__/
+.impeccable/shots/

@@ -1,8 +1,63 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Sometype Mono", ui-monospace, monospace;
+
+  --color-blotter: #d3dbd5;
+  --color-blotter-deep: #c3cdc6;
+  --color-paper: #fdfdfb;
+  --color-canary: #f8eeb4;
+  --color-pink: #f7d9df;
+  --color-goldenrod: #efd28c;
+  --color-manila: #ece2c6;
+  --color-slip: #f5e4d6;      /* routing-slip salmon */
+  --color-greenbar: #e7f0e6;  /* continuous-form ledger band */
+
+  --color-form: #2b5c55;      /* drop-out ink: printed labels and rules */
+  --color-rule: #a9c0b9;
+  --color-rule-soft: #d6e2de;
+  --color-carbon: #312c86;    /* typed / filled-in values */
+  --color-ink: #1b2220;
+  --color-muted: #4f5d59;
+
+  --color-stamp-ok: #17683f;
+  --color-stamp-hold: #b04a06;
+  --color-stamp-void: #b3261e;
+  --color-stamp-run: #312c86;
 }
 
-body { @apply bg-slate-50 text-slate-900 antialiased; }
+@layer base {
+  html { background: var(--color-blotter); }
+  body { @apply bg-blotter text-ink antialiased; font-family: var(--font-sans); font-variation-settings: "wdth" 100; }
+  ::selection { background: color-mix(in srgb, var(--color-carbon) 22%, transparent); color: var(--color-ink); }
+  input, textarea { caret-color: var(--color-carbon); }
+  :focus-visible { outline: 2px solid var(--color-carbon); outline-offset: 2px; }
+  * { scrollbar-color: var(--color-rule) transparent; scrollbar-width: thin; }
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  /* A sheet of form stock lying on the blotter. */
+  .sheet { @apply relative bg-paper border border-rule; box-shadow: 0 1px 1px rgb(27 34 32 / .06), 0 10px 24px -14px rgb(27 34 32 / .35); }
+  /* Printed form label: condensed caps in drop-out ink. */
+  .label { font-size: 10px; line-height: 1.1; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--color-form); font-variation-settings: "wdth" 75; }
+  .typed { font-family: var(--font-mono); color: var(--color-carbon); }
+  .title { font-weight: 800; letter-spacing: -.01em; font-variation-settings: "wdth" 112; }
+  .perf { border-top: 1.5px dashed var(--color-rule); }
+  /* Continuous-form ledger paper: green bars every other row, tractor-feed holes in the margin. */
+  .greenbar tbody tr:nth-child(4n+1), .greenbar tbody tr:nth-child(4n+2) { background: var(--color-greenbar); }
+  .tractor { background-image: radial-gradient(circle at center, var(--color-blotter) 0 4px, transparent 4.5px); background-size: 18px 22px; background-repeat: repeat-y; background-position: center 6px; }
+  .box { @apply border-rule; }
+}
+
+/* The one authored motion: a rubber stamp striking the voucher. */
+@keyframes strike {
+  0% { opacity: 0; transform: rotate(var(--rot, -7deg)) scale(1.6); filter: blur(2px); }
+  60% { opacity: 1; transform: rotate(var(--rot, -7deg)) scale(.96); filter: blur(0); }
+  100% { opacity: 1; transform: rotate(var(--rot, -7deg)) scale(1); }
+}
+.stamp-strike { animation: strike 380ms cubic-bezier(.2, .9, .25, 1) both; }
+@keyframes punch { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+.punch-in { animation: punch 180ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .stamp-strike, .punch-in { animation: none; } }
