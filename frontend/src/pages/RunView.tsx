@@ -9,7 +9,12 @@ import { Confidence, Empty, ErrorNote, FormBox, OutcomeMark, Skeleton, Stamp, St
 /** Detail is fetched once (refresh-safe), then live stage events stream in over SSE and are appended. */
 function useRun(id: string) {
   const qc = useQueryClient();
-  const query = useQuery({ queryKey: ["run", id], queryFn: () => unwrap(api.GET("/api/runs/{run_id}", { params: { path: { run_id: id } } })) });
+  const query = useQuery({
+    queryKey: ["run", id],
+    queryFn: () => unwrap(api.GET("/api/runs/{run_id}", { params: { path: { run_id: id } } })),
+    // Fallback while live: if the event stream drops, polling still moves the page to the final state.
+    refetchInterval: (q) => (q.state.data && !["completed", "failed"].includes(q.state.data.status) ? config.liveRunPollMs : false),
+  });
   const live = query.data && !["completed", "failed"].includes(query.data.status);
   const lastId = query.data?.events.at(-1)?.id ?? 0;
   useEffect(() => {
@@ -21,7 +26,9 @@ function useRun(id: string) {
         old && !old.events.some((e) => e.id === ev.id) ? { ...old, status: "running", current_stage: ev.stage, events: [...old.events, ev] } : old);
     });
     es.addEventListener("done", () => { es.close(); qc.invalidateQueries({ queryKey: ["run", id] }); });
-    es.onerror = () => { es.close(); setTimeout(() => qc.invalidateQueries({ queryKey: ["run", id] }), 1500); };
+    // No close on error: the browser reconnects the stream by itself, duplicates are dropped above, and the
+    // poll keeps the page moving meanwhile.
+    es.onerror = () => { qc.invalidateQueries({ queryKey: ["run", id] }); };
     return () => es.close();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reconnect only when liveness changes, resuming after lastId
   }, [id, live]);
@@ -59,6 +66,8 @@ export default function RunView() {
       </Link>
 
       <VoucherCover run={r} ex={ex} strike={sawLive.current} />
+
+      <LiveRead run={r} />
 
       <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
         <RoutingSlip run={r} />
@@ -108,6 +117,7 @@ function VoucherCover({ run, ex, strike }: { run: RunDetail; ex?: Extraction; st
   const k = stampKey(run.status, run.decision, run.reviewer_action);
   const flagged = allChecks(run).filter((c) => c.outcome === "review" || c.outcome === "reject");
   const done = run.status === "completed";
+  const headline = (run.result as unknown as RunResult | null)?.headline;
 
   return (
     <div className="relative mr-2.5 mt-2.5">
@@ -135,13 +145,21 @@ function VoucherCover({ run, ex, strike }: { run: RunDetail; ex?: Extraction; st
             <div className="label">Disposition</div>
             {!done ? (
               <p className="mt-1 text-sm text-muted">{run.status === "failed" ? `The run stopped: ${run.error}` : "The packet is still moving through the desks. Watch the routing slip."}</p>
-            ) : flagged.length ? (
-              <ul className="mt-1.5 space-y-1.5">
-                {flagged.map((c) => (
-                  <li key={c.id} className="flex gap-2 text-sm"><OutcomeMark outcome={c.outcome} /><span><b className="font-semibold">{c.title}.</b> {c.detail}</span></li>
-                ))}
-              </ul>
-            ) : <p className="mt-1 text-sm">{run.decision_summary}</p>}
+            ) : (
+              <>
+                {headline && <p className="mt-1 text-base font-semibold">{headline}</p>}
+                {flagged.length ? (
+                  <ul className="mt-1.5 space-y-1.5">
+                    {flagged.map((c) => (
+                      <li key={c.id} className="flex gap-2 text-sm"><OutcomeMark outcome={c.outcome} /><span><b className="font-semibold">{c.title}.</b> {c.detail}
+                        {typeof c.evidence?.original_run === "string" && (
+                          <> <Link to={`/runs/${c.evidence.original_run}`} className="font-semibold underline underline-offset-2">Open the original</Link></>
+                        )}</span></li>
+                    ))}
+                  </ul>
+                ) : <p className="mt-1 text-sm">{(run.result as unknown as RunResult | null)?.summary ?? run.decision_summary}</p>}
+              </>
+            )}
           {run.decision === "needs_review" && !run.reviewer_action && (
               <div className="mt-4 grid max-w-xl gap-3 border-t border-dashed border-rule pt-3 sm:grid-cols-[1fr_auto] sm:items-end">
                 <label className="block">
@@ -170,6 +188,43 @@ function VoucherCover({ run, ex, strike }: { run: RunDetail; ex?: Extraction; st
     </section>
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ live read */
+/** While the model reads the invoice (most of a run), show the page it is reading and how long it has taken. */
+function LiveRead({ run }: { run: RunDetail }) {
+  const ingest = run.events.find((e) => e.stage === "ingest" && e.status === "completed");
+  const started = run.events.find((e) => e.stage === "extract" && e.status === "started");
+  const finished = run.events.some((e) => e.stage === "extract" && e.status !== "started");
+  const reading = !!ingest && !!started && !finished && run.status !== "failed" && run.status !== "completed";
+  const secs = useElapsed(reading ? started?.ts : undefined);
+  if (!reading) return null;
+  const pages = (ingest?.data?.pages as number | undefined) ?? 1;
+  return (
+    <section className="sheet grid gap-4 p-4 md:grid-cols-[minmax(0,320px)_1fr] md:items-center" aria-live="polite">
+      <img src={`${config.apiBaseUrl}/api/runs/${run.id}/pages/1`} alt="Invoice page being read"
+        className="max-h-72 w-full border border-rule object-contain object-top" />
+      <div>
+        <div className="label animate-pulse text-carbon">Reading the invoice</div>
+        <p className="mt-1 text-sm">{started?.title}. The model reads {pages > 1 ? `all ${pages} pages` : "the page"} and
+          the PDF's own text, and quotes where each value came from so it can be checked next.</p>
+        <p className="typed tnum mt-2 text-2xl">{secs} s</p>
+        {secs >= config.slowReadSeconds && (
+          <p className="mt-1 text-sm text-stamp-hold">Taking longer than usual. The model provider may be slow; the run carries on.</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function useElapsed(since?: string) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!since) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [since]);
+  return since ? Math.max(0, Math.round((now - new Date(since).getTime()) / 1000)) : 0;
 }
 
 /* ------------------------------------------------------------------ routing slip */

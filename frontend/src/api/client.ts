@@ -31,6 +31,7 @@ export interface Extraction {
 }
 export interface LlmCall { role: string; model: string; prompt_ref: string; params: Record<string, unknown>; latency_ms: number; input_tokens: number | null; output_tokens: number | null; attempts: number }
 export interface RunResult {
+  headline?: string;
   decision: string; summary: string; checks: Check[]; extraction: Extraction; page_count: number;
   match: { how: string; llm?: boolean; settled_by?: string; confidence?: string; doubt?: string; po_number?: string | null; line_map?: (string | null)[] };
   provenance: { file_sha256: string; pipeline_git_sha: string; started_at: string; finished_at: string; llm_calls: LlmCall[] };
