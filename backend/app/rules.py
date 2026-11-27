@@ -17,6 +17,26 @@ from app.schemas import InvoiceExtraction
 Outcome = Literal["pass", "info", "review", "reject"]
 
 
+# Each check is written with the title it carries when it passes. A flagged check must not keep that wording
+# ("Not a duplicate" on a duplicate reads as a contradiction), so it is renamed here: pass title -> flagged title,
+# or pass title -> {outcome: flagged title} when review and reject need different words.
+FLAGGED_TITLES: dict[str, str | dict[str, str]] = {
+    "Document is an invoice": {"reject": "Not an invoice", "review": "Document type needs a person"},
+    "Required fields present": "Required fields missing",
+    "Values match the PDF's own text": "Values not found in the PDF's own text",
+    "Scanned invoice read with confidence": "Scanned invoice: reader unsure of key values",
+    "Invoice arithmetic adds up": "Invoice arithmetic does not add up",
+    "Vendor is approved": "Vendor not approved",
+    "Bank details match vendor record": "Bank account differs from vendor record",
+    "Not a duplicate": {"reject": "Duplicate invoice", "review": "Possible duplicate"},
+    "Matched to an open PO": "No confident PO match",
+    "Currency matches PO": "Currency differs from PO",
+    "Prices within tolerance": "Prices outside tolerance",
+    "Every line is on the PO": "Lines not on the PO",
+    "PO has enough remaining": "Over-billing the PO",
+}
+
+
 @dataclass
 class Check:
     id: str
@@ -24,6 +44,14 @@ class Check:
     outcome: Outcome
     detail: str
     evidence: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if self.outcome in ("review", "reject"):
+            flagged = FLAGGED_TITLES.get(self.title)
+            if isinstance(flagged, dict):
+                flagged = flagged.get(self.outcome)
+            if flagged:
+                self.title = flagged
 
 
 @dataclass

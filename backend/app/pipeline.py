@@ -219,6 +219,12 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
     await emit(run_id, "duplicate", "completed", dup.detail, {"checks": [dup.__dict__], "ledger_size": len(ledger)})
 
     await emit(run_id, "po_checks", "started", "Comparing prices, quantities and PO balance")
+    if dup.outcome == "reject":
+        # A duplicate is void whatever the PO says; comparing it would count its own original against the
+        # balance and add a misleading over-billing hold next to the real reason.
+        await emit(run_id, "po_checks", "skipped", "Not compared: this invoice is a duplicate",
+                   {"checks": [], "duplicate": True})
+        return await _finish(run_id, ing, ex, checks, vendor, po, line_map, calls, started, match_info)
     po_checks = rules.check_lines_against_po(po, ex, line_map, ledger)
     cur = rules.check_currency(po, ex)
     po_checks = ([cur] if cur else []) + po_checks

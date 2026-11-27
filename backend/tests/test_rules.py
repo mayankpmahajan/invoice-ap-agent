@@ -48,6 +48,17 @@ def test_tolerance_needs_both_bounds():
     assert rules.within_tolerance(100.01, 100.0)     # rounding
 
 
+def test_flagged_checks_do_not_keep_pass_wording():
+    dup = rules.check_duplicate(inv(), "V-1", "h1", [ledger(invoice_number="INV-0042", invoice_number_norm="INV42")])
+    assert (dup.outcome, dup.title) == ("reject", "Duplicate invoice")
+    near = rules.check_duplicate(inv(number="X-9", total=8700.0), "V-1", "h1", [ledger(invoice_date=date(2026, 11, 1))])
+    assert (near.outcome, near.title) == ("review", "Possible duplicate")
+    over = {c.id: c for c in rules.check_lines_against_po(PO, inv(qty=50), ["PO-1#1"], [ledger()])}["po_balance"]
+    assert over.title == "Over-billing the PO"
+    ok = rules.check_duplicate(inv(), "V-1", "h1", [])
+    assert (ok.outcome, ok.title) == ("pass", "Not a duplicate")
+
+
 def test_split_po_within_balance_passes_and_overbilling_is_held():
     ok = rules.check_lines_against_po(PO, inv(qty=40), ["PO-1#1"], [ledger()])
     assert {c.id: c.outcome for c in ok}["po_balance"] == "pass"

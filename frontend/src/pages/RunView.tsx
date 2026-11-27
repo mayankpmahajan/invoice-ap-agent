@@ -328,6 +328,7 @@ function PoCopy({ run, ex }: { run: RunDetail; ex?: Extraction }) {
   const matchEv = run.events.find((e) => e.stage === "match" && e.status === "completed");
   if (!poEv || !ex) return <Waiting what="the invoice is compared with its PO" />;
   const po = poEv.data?.po as { po_number: string; total: number; currency: string; lines: PoLine[] } | null;
+  if (poEv.data?.duplicate) return <Empty title="Not compared with the PO">This invoice is a duplicate, so it is void whatever the PO says. Its original is the one that counts against the PO.</Empty>;
   if (!po) return <Empty title="No purchase order matched">There is nothing to compare this invoice against, so it is held for a person.</Empty>;
   const map = (matchEv?.data?.line_map as (string | null)[] | undefined) ?? [];
   const bal = ((poEv.data?.checks as Check[]) ?? []).find((c) => c.id === "po_balance")?.evidence as
