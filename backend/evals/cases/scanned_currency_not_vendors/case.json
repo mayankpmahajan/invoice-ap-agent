@@ -1,0 +1,115 @@
+{
+ "id": "scanned_currency_not_vendors",
+ "scenario": "Scan the reader leans EUR on, from a vendor that bills in USD",
+ "branch": "grounding review: an unsure currency that master data contradicts stays unsure; currency check vs PO",
+ "ps1": "scanned image; unclear currency",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "scanned",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0137",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # INV-0137"
+    },
+    "invoice_date": {
+     "value": "2026-11-13",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 13 Nov 2026"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "EUR",
+     "confidence": "leaning",
+     "page": 1,
+     "quote": "Total due €363.72"
+    },
+    "po_reference": {
+     "value": "PO-2026-0430",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0430"
+    },
+    "line_items": [
+     {
+      "description": "Arabica coffee beans 1kg",
+      "sku": "NW-CF-1KG",
+      "quantity": 14.0,
+      "unit_price": 24.0,
+      "amount": 336.0,
+      "page": 1,
+      "quote": "NW-CF-1KG Arabica coffee beans 1kg 14 €24.00 €336.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 336.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal €336.00"
+    },
+    "tax_amount": {
+     "value": 27.72,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) €27.72"
+    },
+    "total": {
+     "value": 363.72,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due €363.72"
+    },
+    "amounts_include_tax": false,
+    "doubts": "The currency symbol is smudged; it may be a euro sign."
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "grounding": "review",
+     "currency": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0430",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

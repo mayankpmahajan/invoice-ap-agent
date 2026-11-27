@@ -198,9 +198,13 @@ def check_required_fields(ex: InvoiceExtraction) -> Check:
                  {"missing": missing})
 
 
-def check_grounding(ex: InvoiceExtraction, verified: dict[str, bool], has_text_layer: bool) -> Check:
-    """verified: field -> quote found verbatim in the PDF's own text layer (only meaningful for digital PDFs)."""
+def check_grounding(ex: InvoiceExtraction, verified: dict[str, bool], has_text_layer: bool,
+                    corroborated: dict[str, str] | None = None) -> Check:
+    """verified: field -> quote found verbatim in the PDF's own text layer (only meaningful for digital PDFs).
+    corroborated: field -> where an unsure scanned value was confirmed independently (e.g. the currency a "$" sign
+    implies, confirmed by the exactly-matched vendor's record). Only scans use it: digital PDFs have the text layer."""
     critical = [f for f in settings.CRITICAL_FIELDS if getattr(ex, f).value is not None]
+    corroborated = corroborated or {}
     if has_text_layer:
         failed = [f for f in critical if not verified.get(f)]
         if failed:
@@ -209,13 +213,20 @@ def check_grounding(ex: InvoiceExtraction, verified: dict[str, bool], has_text_l
                          {"unverified": failed, "verified": verified})
         return Check("grounding", "Values match the PDF's own text", "pass",
                      "Every key value was found verbatim in the PDF's embedded text.", {"verified": verified})
-    unsure = [f for f in critical if getattr(ex, f).confidence != "sure"]
+    if not critical:
+        return Check("grounding", "Scanned invoice read with confidence", "info",
+                     "Scanned invoice with no embedded text, and no key value could be read to check.")
+    confirmed = {f: corroborated[f] for f in critical if getattr(ex, f).confidence != "sure" and f in corroborated}
+    unsure = [f for f in critical if getattr(ex, f).confidence != "sure" and f not in confirmed]
+    note = "".join(f" The reader was unsure of {f}, but it matches {src}." for f, src in confirmed.items())
     if unsure:
         return Check("grounding", "Scanned invoice read with confidence", "review",
-                     f"Scanned invoice (no text to cross-check) and the reader was unsure of: {', '.join(unsure)}.",
-                     {"unsure": unsure})
+                     f"Scanned invoice (no text to cross-check) and the reader was unsure of: {', '.join(unsure)}."
+                     + note, {"unsure": unsure, "corroborated": confirmed})
     return Check("grounding", "Scanned invoice read with confidence", "info",
-                 "Scanned invoice with no embedded text; the reader was sure of every key value.")
+                 ("Scanned invoice with no embedded text; the reader was sure of every other key value." if confirmed
+                  else "Scanned invoice with no embedded text; the reader was sure of every key value.") + note,
+                 {"corroborated": confirmed})
 
 
 def check_arithmetic(ex: InvoiceExtraction) -> Check:

@@ -89,6 +89,18 @@ def verify_against_text_layer(ex: InvoiceExtraction, ing: IngestedPdf) -> dict[s
     return out
 
 
+def corroborate_scan(ex: InvoiceExtraction, vendors: list[rules.VendorRec], pos: list[rules.PORec]
+                     ) -> dict[str, str]:
+    """Unsure scanned values that master data confirms. Only the currency qualifies: a "$" or "£" on a scan leaves
+    the reader unsure of the ISO code, and the vendor found by exact identifiers (tax ID / name, no model) bills in
+    one currency. A different currency stays unsure, and the currency-vs-PO check still runs later."""
+    vendor, _, _, _ = fast_match(ex, vendors, pos)
+    cur = (ex.currency.value or "").upper()
+    if vendor and cur and cur == vendor.currency.upper():
+        return {"currency": f"{vendor.name}'s billing currency on record ({vendor.currency})"}
+    return {}
+
+
 # ------------------------------------------------------------------ match
 def _norm_name(s: str | None) -> str:
     s = re.sub(r"[^a-z0-9 ]", "", (s or "").lower())
@@ -184,8 +196,10 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
 
     await emit(run_id, "verify", "started", "Checking extraction against the PDF")
     verified = verify_against_text_layer(ex, ing) if ing.kind == "digital" else {}
+    vendors, pos = await load_master()
     checks = [rules.check_document_type(ex), rules.check_required_fields(ex),
-              rules.check_grounding(ex, verified, ing.kind == "digital"), rules.check_arithmetic(ex)]
+              rules.check_grounding(ex, verified, ing.kind == "digital", corroborate_scan(ex, vendors, pos)),
+              rules.check_arithmetic(ex)]
     await emit(run_id, "verify", "completed", "Extraction verified", {"checks": [c.__dict__ for c in checks]})
     await _pace()
 
@@ -194,7 +208,6 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
         return await _finish(run_id, ing, ex, checks, None, None, [], calls, started, {"how": "skipped"})
 
     await emit(run_id, "match", "started", "Matching vendor and purchase order")
-    vendors, pos = await load_master()
     ledger = await load_ledger(run_id)
     vendor, po, line_map, complete = fast_match(ex, vendors, pos)
     match_info: dict[str, Any] = {"how": "exact identifiers", "llm": False}

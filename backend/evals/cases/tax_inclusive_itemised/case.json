@@ -5,7 +5,7 @@
  "ps1": "tax embedded in itemised lines",
  "as_of": "2026-11-28",
  "master_patch": null,
- "xfail": "rules.py:373-376 compares the VAT-inclusive unit price (2,880) with the pre-tax PO price (2,400) and holds the invoice as 20% over; README says POs are pre-tax, so a tax-inclusive line should be compared net of its tax",
+ "xfail": null,
  "steps": [
   {
    "file": "invoice.pdf",

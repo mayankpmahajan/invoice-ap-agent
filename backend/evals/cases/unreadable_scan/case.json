@@ -5,7 +5,7 @@
  "ps1": "",
  "as_of": "2026-11-28",
  "master_patch": null,
- "xfail": "pipeline.py:192 stops early only for not_an_invoice, so an unreadable page goes on to matching, finds no vendor and rules.py:248-250 rejects it as 'not in the vendor master' (void); an unreadable document should be held for a person / a readable copy, not voided",
+ "xfail": null,
  "steps": [
   {
    "file": "invoice.pdf",
