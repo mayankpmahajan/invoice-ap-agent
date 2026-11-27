@@ -1,0 +1,126 @@
+{
+ "id": "scanned_inferred_po_sure",
+ "scenario": "Scanned image, no PO printed; generator is sure which PO it is",
+ "branch": "grounding info (scan, all sure) + po_match info (inferred, sure) -> approved",
+ "ps1": "scanned image; implied PO",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "scanned",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Brightline Logistics LLC",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Brightline Logistics LLC"
+    },
+    "vendor_tax_id": {
+     "value": "46-7788990",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 46-7788990"
+    },
+    "vendor_bank_account": {
+     "value": "routing 121000248, account 771203945",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Wire to Wells Fargo, routing 121000248, account 771203945. Net 45."
+    },
+    "invoice_number": {
+     "value": "BL-26-10502",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # BL-26-10502"
+    },
+    "invoice_date": {
+     "value": "2026-11-09",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date Nov 9, 2026"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $5,550.00"
+    },
+    "po_reference": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "line_items": [
+     {
+      "description": "FTL Chicago IL -> Dallas TX, 53' dry van",
+      "sku": null,
+      "quantity": 3.0,
+      "unit_price": 1850.0,
+      "amount": 5550.0,
+      "page": 1,
+      "quote": "FTL Chicago IL -> Dallas TX, 53' dry van 3 $1,850.00 $5,550.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 5550.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $5,550.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax $0.00"
+    },
+    "total": {
+     "value": 5550.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $5,550.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": {
+    "generator": {
+     "vendor_id": "V-1002",
+     "po_number": "PO-2026-0461",
+     "lines": [
+      "PO-2026-0461#1"
+     ],
+     "confidence": "sure",
+     "doubt": ""
+    },
+    "critique": null
+   },
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {
+     "grounding": "info",
+     "po_match": "info"
+    },
+    "status": "completed",
+    "how": "model",
+    "settled_by": "generator",
+    "po": "PO-2026-0461",
+    "vendor": null,
+    "po_how": "inferred"
+   }
+  }
+ ]
+}

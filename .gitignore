@@ -5,3 +5,4 @@ frontend/dist/
 .venv/
 __pycache__/
 .impeccable/shots/
+backend/evals/results/

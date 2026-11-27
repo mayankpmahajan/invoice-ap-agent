@@ -1,0 +1,114 @@
+{
+ "id": "bank_account_changed",
+ "scenario": "Amounts match the PO but the remittance account is new",
+ "branch": "bank_details review (most common invoice-fraud pattern)",
+ "ps1": "approved vendors",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Meridian Industrial Parts Co.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Meridian Industrial Parts Co."
+    },
+    "vendor_tax_id": {
+     "value": "27-5544321",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax ID 27-5544321"
+    },
+    "vendor_bank_account": {
+     "value": "ABA 084000026, acct 9912004471",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Remit to First Horizon Bank, ABA 084000026, acct 9912004471. Net 60. Note: new bank details."
+    },
+    "invoice_number": {
+     "value": "MIP-7988",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # MIP-7988"
+    },
+    "invoice_date": {
+     "value": "2026-11-10",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-10"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $2,175.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0455",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0455"
+    },
+    "line_items": [
+     {
+      "description": "Hydraulic pump seal kit HP-220",
+      "sku": "MIP-SK-220",
+      "quantity": 15.0,
+      "unit_price": 145.0,
+      "amount": 2175.0,
+      "page": 1,
+      "quote": "MIP-SK-220 Hydraulic pump seal kit HP-220 15 $145.00 $2,175.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 2175.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $2,175.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax (0% - resale cert. on file) $0.00"
+    },
+    "total": {
+     "value": 2175.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $2,175.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "bank_details": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0455",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

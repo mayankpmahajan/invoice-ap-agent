@@ -1,0 +1,133 @@
+{
+ "id": "po_cited_not_found",
+ "scenario": "Invoice cites PO-2026-0999, which does not exist",
+ "branch": "po_match review: cited PO not on file",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0184",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # INV-0184"
+    },
+    "invoice_date": {
+     "value": "2026-11-18",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-18"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $259.80"
+    },
+    "po_reference": {
+     "value": "PO-2026-0999",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0999"
+    },
+    "line_items": [
+     {
+      "description": "Arabica coffee beans 1kg",
+      "sku": "NW-CF-1KG",
+      "quantity": 10.0,
+      "unit_price": 24.0,
+      "amount": 240.0,
+      "page": 1,
+      "quote": "NW-CF-1KG Arabica coffee beans 1kg 10 $24.00 $240.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 240.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $240.00"
+    },
+    "tax_amount": {
+     "value": 19.8,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $19.80"
+    },
+    "total": {
+     "value": 259.8,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $259.80"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": {
+    "generator": {
+     "vendor_id": "V-1001",
+     "po_number": "none",
+     "lines": [
+      "none"
+     ],
+     "confidence": "torn",
+     "doubt": "Cited PO-2026-0999 is not on file; the coffee line resembles PO-2026-0430."
+    },
+    "critique": {
+     "vendor_id": "V-1001",
+     "po_number": "none",
+     "lines": [
+      "none"
+     ],
+     "confidence": "torn",
+     "doubt": "The cited PO does not exist."
+    }
+   },
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "po_match": "review"
+    },
+    "status": "completed",
+    "how": "model",
+    "settled_by": "critique",
+    "po": null,
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

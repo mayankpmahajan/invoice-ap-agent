@@ -1,0 +1,120 @@
+{
+ "id": "unreadable_scan",
+ "scenario": "A fax-quality scan nobody can read",
+ "branch": "document_type review (unreadable)",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": "pipeline.py:192 stops early only for not_an_invoice, so an unreadable page goes on to matching, finds no vendor and rules.py:248-250 rejects it as 'not in the vendor master' (void); an unreadable document should be held for a person / a readable copy, not voided",
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "scanned",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "unreadable",
+    "vendor_name": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "vendor_tax_id": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "vendor_bank_account": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "invoice_number": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "invoice_date": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "po_reference": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "line_items": [],
+    "subtotal": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "tax_amount": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "total": {
+     "value": null,
+     "confidence": "torn",
+     "page": null,
+     "quote": null
+    },
+    "amounts_include_tax": false,
+    "doubts": "The page is too degraded to read any value."
+   },
+   "matcher": {
+    "generator": {
+     "vendor_id": "none",
+     "po_number": "none",
+     "lines": [],
+     "confidence": "torn",
+     "doubt": "Nothing on the document is legible."
+    },
+    "critique": {
+     "vendor_id": "none",
+     "po_number": "none",
+     "lines": [],
+     "confidence": "torn",
+     "doubt": "Nothing on the document is legible."
+    }
+   },
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "document_type": "review",
+     "required_fields": "review",
+     "grounding": "info"
+    },
+    "status": "completed",
+    "how": "skipped",
+    "settled_by": null,
+    "po": null,
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

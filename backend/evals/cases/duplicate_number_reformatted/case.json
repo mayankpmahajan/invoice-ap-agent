@@ -1,0 +1,215 @@
+{
+ "id": "duplicate_number_reformatted",
+ "scenario": "Same invoice re-sent from another system: INV-0162 becomes INV0162",
+ "branch": "duplicate reject by vendor + normalised number",
+ "ps1": "duplicate detection",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "prior_1.pdf",
+   "role": "prior",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0162",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # INV-0162"
+    },
+    "invoice_date": {
+     "value": "2026-11-06",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-06"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $311.76"
+    },
+    "po_reference": {
+     "value": "PO-2026-0430",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0430"
+    },
+    "line_items": [
+     {
+      "description": "Arabica coffee beans 1kg",
+      "sku": "NW-CF-1KG",
+      "quantity": 12.0,
+      "unit_price": 24.0,
+      "amount": 288.0,
+      "page": 1,
+      "quote": "NW-CF-1KG Arabica coffee beans 1kg 12 $24.00 $288.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 288.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $288.00"
+    },
+    "tax_amount": {
+     "value": 23.76,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $23.76"
+    },
+    "total": {
+     "value": 311.76,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $311.76"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {},
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": null,
+    "vendor": null,
+    "po_how": null
+   }
+  },
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV0162",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice No: INV0162"
+    },
+    "invoice_date": {
+     "value": "2026-11-06",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Date: 2026-11-06"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $311.76"
+    },
+    "po_reference": {
+     "value": "PO-2026-0430",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO Ref: PO-2026-0430"
+    },
+    "line_items": [
+     {
+      "description": "Arabica coffee beans 1kg",
+      "sku": "NW-CF-1KG",
+      "quantity": 12.0,
+      "unit_price": 24.0,
+      "amount": 288.0,
+      "page": 1,
+      "quote": "NW-CF-1KG Arabica coffee beans 1kg 12 $24.00 $288.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 288.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $288.00"
+    },
+    "tax_amount": {
+     "value": 23.76,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $23.76"
+    },
+    "total": {
+     "value": 311.76,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $311.76"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "rejected",
+    "checks": {
+     "duplicate": "reject"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0430",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

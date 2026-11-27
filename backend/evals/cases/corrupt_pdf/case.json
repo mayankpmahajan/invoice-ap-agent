@@ -1,0 +1,30 @@
+{
+ "id": "corrupt_pdf",
+ "scenario": "A truncated file that starts like a PDF but cannot be opened",
+ "branch": "ingest raises -> run status failed (terminal, error stored)",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "broken",
+   "image_only_fields": [],
+   "extraction": null,
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": null,
+    "checks": {},
+    "status": "failed",
+    "how": null,
+    "settled_by": null,
+    "po": null,
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,233 @@
+{
+ "id": "recurring_monthly_subscription",
+ "scenario": "Monthly subscription: October and November invoices, same total, 30 days apart, each naming its own billing period",
+ "branch": "near-duplicate (vendor + total + date) on a recurring PO",
+ "ps1": "duplicate detection rules",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": "rules.py:308-316 flags every same-total invoice within 30 days as a possible duplicate, so each month of a recurring subscription PO (12 monthly units on PO-2026-0478) is held; the billing period differs and the PO has quantity left, so it should not be treated as re-billing",
+ "steps": [
+  {
+   "file": "prior_1.pdf",
+   "role": "prior",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Cobalt Cloud Services Ltd",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Cobalt Cloud Services Ltd"
+    },
+    "vendor_tax_id": {
+     "value": "GB 293 4471 02",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "VAT GB 293 4471 02"
+    },
+    "vendor_bank_account": {
+     "value": "GB29 NWBK 6016 1331 9268 19",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Pay to NatWest, IBAN GB29 NWBK 6016 1331 9268 19, BIC NWBKGB2L."
+    },
+    "invoice_number": {
+     "value": "CCS-INV-2611",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # CCS-INV-2611"
+    },
+    "invoice_date": {
+     "value": "2026-10-02",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-10-02"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "GBP",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due £2,750.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0478",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0478"
+    },
+    "line_items": [
+     {
+      "description": "Platform subscription - Enterprise tier (Oct 2026)",
+      "sku": "CCS-PLAT-ENT",
+      "quantity": 1.0,
+      "unit_price": 2400.0,
+      "amount": 2400.0,
+      "page": 1,
+      "quote": "CCS-PLAT-ENT Platform subscription - Enterprise tier (Oct 2026) 1 £2,400.00 £2,400.00",
+      "confidence": "sure"
+     },
+     {
+      "description": "Premium support (Oct 2026)",
+      "sku": "CCS-SUP-PREM",
+      "quantity": 1.0,
+      "unit_price": 350.0,
+      "amount": 350.0,
+      "page": 1,
+      "quote": "CCS-SUP-PREM Premium support (Oct 2026) 1 £350.00 £350.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 2750.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal £2,750.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "VAT (0% - reverse charge) £0.00"
+    },
+    "total": {
+     "value": 2750.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due £2,750.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {},
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": null,
+    "vendor": null,
+    "po_how": null
+   }
+  },
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Cobalt Cloud Services Ltd",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Cobalt Cloud Services Ltd"
+    },
+    "vendor_tax_id": {
+     "value": "GB 293 4471 02",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "VAT GB 293 4471 02"
+    },
+    "vendor_bank_account": {
+     "value": "GB29 NWBK 6016 1331 9268 19",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Pay to NatWest, IBAN GB29 NWBK 6016 1331 9268 19, BIC NWBKGB2L."
+    },
+    "invoice_number": {
+     "value": "CCS-INV-2702",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # CCS-INV-2702"
+    },
+    "invoice_date": {
+     "value": "2026-11-01",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-01"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "GBP",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due £2,750.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0478",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0478"
+    },
+    "line_items": [
+     {
+      "description": "Platform subscription - Enterprise tier (Nov 2026)",
+      "sku": "CCS-PLAT-ENT",
+      "quantity": 1.0,
+      "unit_price": 2400.0,
+      "amount": 2400.0,
+      "page": 1,
+      "quote": "CCS-PLAT-ENT Platform subscription - Enterprise tier (Nov 2026) 1 £2,400.00 £2,400.00",
+      "confidence": "sure"
+     },
+     {
+      "description": "Premium support (Nov 2026)",
+      "sku": "CCS-SUP-PREM",
+      "quantity": 1.0,
+      "unit_price": 350.0,
+      "amount": 350.0,
+      "page": 1,
+      "quote": "CCS-SUP-PREM Premium support (Nov 2026) 1 £350.00 £350.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 2750.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal £2,750.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "VAT (0% - reverse charge) £0.00"
+    },
+    "total": {
+     "value": 2750.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due £2,750.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {},
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0478",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

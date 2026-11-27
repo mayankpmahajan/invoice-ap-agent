@@ -1,0 +1,114 @@
+{
+ "id": "no_remittance_or_tax_id",
+ "scenario": "Minimal invoice: no bank details and no tax ID printed",
+ "branch": "bank_details info (pays the account on file); tax_id check not produced; vendor found by name",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Brightline Logistics LLC",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Brightline Logistics LLC"
+    },
+    "vendor_tax_id": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "vendor_bank_account": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "invoice_number": {
+     "value": "BL-26-10671",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # BL-26-10671"
+    },
+    "invoice_date": {
+     "value": "2026-11-12",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-12"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $825.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0470",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0470"
+    },
+    "line_items": [
+     {
+      "description": "LTL shipment Midwest region (per pallet)",
+      "sku": null,
+      "quantity": 5.0,
+      "unit_price": 165.0,
+      "amount": 825.0,
+      "page": 1,
+      "quote": "LTL shipment Midwest region (per pallet) 5 $165.00 $825.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 825.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $825.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax $0.00"
+    },
+    "total": {
+     "value": 825.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $825.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {
+     "bank_details": "info"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0470",
+    "vendor": "V-1002",
+    "po_how": null
+   }
+  }
+ ]
+}

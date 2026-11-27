@@ -1,0 +1,124 @@
+{
+ "id": "arithmetic_lines_vs_subtotal",
+ "scenario": "Lines add up to 1,075.00 but the printed subtotal is 1,175.00",
+ "branch": "arithmetic review: line sum != subtotal",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0146",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice No: INV-0146"
+    },
+    "invoice_date": {
+     "value": "2026-11-17",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Date: 2026-11-17"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,271.94"
+    },
+    "po_reference": {
+     "value": "PO-2026-0412",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO Ref: PO-2026-0412"
+    },
+    "line_items": [
+     {
+      "description": "Ergonomic mesh office chair",
+      "sku": "NW-CH-220",
+      "quantity": 5.0,
+      "unit_price": 189.0,
+      "amount": 945.0,
+      "page": 1,
+      "quote": "NW-CH-220 Ergonomic mesh office chair 5 $189.00 $945.00",
+      "confidence": "sure"
+     },
+     {
+      "description": "A4 copy paper 80gsm (ream)",
+      "sku": "NW-PP-A4",
+      "quantity": 20.0,
+      "unit_price": 6.5,
+      "amount": 130.0,
+      "page": 1,
+      "quote": "NW-PP-A4 A4 copy paper 80gsm (ream) 20 $6.50 $130.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 1175.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $1,175.00"
+    },
+    "tax_amount": {
+     "value": 96.94,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $96.94"
+    },
+    "total": {
+     "value": 1271.94,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,271.94"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "arithmetic": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0412",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,114 @@
+{
+ "id": "missing_invoice_date",
+ "scenario": "Invoice with no invoice date (and no due date)",
+ "branch": "required_fields review (invoice_date); dates check not produced; amount+date duplicate check skipped",
+ "ps1": "missing date",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Brightline Logistics LLC",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Brightline Logistics LLC"
+    },
+    "vendor_tax_id": {
+     "value": "46-7788990",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 46-7788990"
+    },
+    "vendor_bank_account": {
+     "value": "routing 121000248, account 771203945",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Wire to Wells Fargo, routing 121000248, account 771203945. Net 45."
+    },
+    "invoice_number": {
+     "value": "BL-26-10560",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # BL-26-10560"
+    },
+    "invoice_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $990.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0470",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO PO-2026-0470"
+    },
+    "line_items": [
+     {
+      "description": "LTL shipment Midwest region (per pallet)",
+      "sku": null,
+      "quantity": 6.0,
+      "unit_price": 165.0,
+      "amount": 990.0,
+      "page": 1,
+      "quote": "LTL shipment Midwest region (per pallet) 6 $165.00 $990.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 990.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $990.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax $0.00"
+    },
+    "total": {
+     "value": 990.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $990.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "required_fields": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0470",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

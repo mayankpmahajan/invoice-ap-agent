@@ -1,0 +1,114 @@
+{
+ "id": "date_stale",
+ "scenario": "Invoice processed more than a year after its date",
+ "branch": "dates review: older than 365 days",
+ "ps1": "",
+ "as_of": "2027-12-01",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0177",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # INV-0177"
+    },
+    "invoice_date": {
+     "value": "2026-11-20",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-20"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $398.36"
+    },
+    "po_reference": {
+     "value": "PO-2026-0412",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0412"
+    },
+    "line_items": [
+     {
+      "description": "HP 58A black toner cartridge",
+      "sku": "NW-TN-58A",
+      "quantity": 4.0,
+      "unit_price": 92.0,
+      "amount": 368.0,
+      "page": 1,
+      "quote": "NW-TN-58A HP 58A black toner cartridge 4 $92.00 $368.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 368.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $368.00"
+    },
+    "tax_amount": {
+     "value": 30.36,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $30.36"
+    },
+    "total": {
+     "value": 398.36,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $398.36"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "dates": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0412",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

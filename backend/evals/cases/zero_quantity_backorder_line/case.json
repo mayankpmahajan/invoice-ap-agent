@@ -1,0 +1,132 @@
+{
+ "id": "zero_quantity_backorder_line",
+ "scenario": "A backordered line printed with quantity 0 and amount 0.00",
+ "branch": "zero-quantity line skips the price check and uses no balance -> approved",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0195",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice No: INV-0195"
+    },
+    "invoice_date": {
+     "value": "2026-11-25",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Date: 2026-11-25"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $2,397.74"
+    },
+    "po_reference": {
+     "value": "PO-2026-0412",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO Ref: PO-2026-0412"
+    },
+    "line_items": [
+     {
+      "description": "Ergonomic mesh office chair",
+      "sku": "NW-CH-220",
+      "quantity": 10.0,
+      "unit_price": 189.0,
+      "amount": 1890.0,
+      "page": 1,
+      "quote": "NW-CH-220 Ergonomic mesh office chair 10 $189.00 $1,890.00",
+      "confidence": "sure"
+     },
+     {
+      "description": "A4 copy paper 80gsm (ream)",
+      "sku": "NW-PP-A4",
+      "quantity": 50.0,
+      "unit_price": 6.5,
+      "amount": 325.0,
+      "page": 1,
+      "quote": "NW-PP-A4 A4 copy paper 80gsm (ream) 50 $6.50 $325.00",
+      "confidence": "sure"
+     },
+     {
+      "description": "HP 58A black toner cartridge (backordered)",
+      "sku": "NW-TN-58A",
+      "quantity": 0.0,
+      "unit_price": 92.0,
+      "amount": 0.0,
+      "page": 1,
+      "quote": "NW-TN-58A HP 58A black toner cartridge (backordered) 0 $92.00 $0.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 2215.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $2,215.00"
+    },
+    "tax_amount": {
+     "value": 182.74,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $182.74"
+    },
+    "total": {
+     "value": 2397.74,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $2,397.74"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {},
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0412",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

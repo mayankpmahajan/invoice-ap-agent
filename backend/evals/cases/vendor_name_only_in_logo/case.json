@@ -1,0 +1,116 @@
+{
+ "id": "vendor_name_only_in_logo",
+ "scenario": "Digital PDF whose vendor name is only in the letterhead logo image",
+ "branch": "grounding review (digital, a critical value absent from the text layer)",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [
+    "vendor_name"
+   ],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Meridian Industrial Parts Co.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Meridian Industrial Parts Co."
+    },
+    "vendor_tax_id": {
+     "value": "27-5544321",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax ID 27-5544321"
+    },
+    "vendor_bank_account": {
+     "value": "ABA 026009593, acct 330188420057",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Remit to Bank of America, ABA 026009593, acct 330188420057. Net 60."
+    },
+    "invoice_number": {
+     "value": "MIP-7851",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice No: MIP-7851"
+    },
+    "invoice_date": {
+     "value": "2026-11-07",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Date: 2026-11-07"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,450.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0455",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO Ref: PO-2026-0455"
+    },
+    "line_items": [
+     {
+      "description": "Hydraulic pump seal kit HP-220",
+      "sku": "MIP-SK-220",
+      "quantity": 10.0,
+      "unit_price": 145.0,
+      "amount": 1450.0,
+      "page": 1,
+      "quote": "MIP-SK-220 Hydraulic pump seal kit HP-220 10 $145.00 $1,450.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 1450.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $1,450.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax (0% - resale cert. on file) $0.00"
+    },
+    "total": {
+     "value": 1450.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,450.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "grounding": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0455",
+    "vendor": "V-1004",
+    "po_how": null
+   }
+  }
+ ]
+}

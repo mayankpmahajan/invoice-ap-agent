@@ -1,0 +1,114 @@
+{
+ "id": "price_abs_bound_exceeded",
+ "scenario": "Chairs at 191.50 vs PO 189.00: 1.3% but +100.00 on the line",
+ "branch": "price_variance review via the absolute bound only",
+ "ps1": "tolerance thresholds",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Northwind Office Supplies Inc.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Northwind Office Supplies Inc."
+    },
+    "vendor_tax_id": {
+     "value": "84-1234567",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 84-1234567"
+    },
+    "vendor_bank_account": {
+     "value": "routing 021000021, account 483920117",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Payment terms: Net 30. Remit to JPMorgan Chase, routing 021000021, account 483920117."
+    },
+    "invoice_number": {
+     "value": "INV-0153",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # INV-0153"
+    },
+    "invoice_date": {
+     "value": "2026-11-20",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-20"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $8,291.95"
+    },
+    "po_reference": {
+     "value": "PO-2026-0412",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0412"
+    },
+    "line_items": [
+     {
+      "description": "Ergonomic mesh office chair",
+      "sku": "NW-CH-220",
+      "quantity": 40.0,
+      "unit_price": 191.5,
+      "amount": 7660.0,
+      "page": 1,
+      "quote": "NW-CH-220 Ergonomic mesh office chair 40 $191.50 $7,660.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 7660.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $7,660.00"
+    },
+    "tax_amount": {
+     "value": 631.95,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Sales tax (8.25%) $631.95"
+    },
+    "total": {
+     "value": 8291.95,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $8,291.95"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "price_variance": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0412",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

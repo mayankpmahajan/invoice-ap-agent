@@ -1,0 +1,122 @@
+{
+ "id": "tax_inclusive_itemised",
+ "scenario": "Itemised lines priced VAT-inclusive (20%); net prices equal the PO exactly",
+ "branch": "price_variance on tax-inclusive lines: the net price must be compared with the pre-tax PO",
+ "ps1": "tax embedded in itemised lines",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": "rules.py:373-376 compares the VAT-inclusive unit price (2,880) with the pre-tax PO price (2,400) and holds the invoice as 20% over; README says POs are pre-tax, so a tax-inclusive line should be compared net of its tax",
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Cobalt Cloud Services Ltd",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Cobalt Cloud Services Ltd"
+    },
+    "vendor_tax_id": {
+     "value": "GB 293 4471 02",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "VAT GB 293 4471 02"
+    },
+    "vendor_bank_account": {
+     "value": "GB29 NWBK 6016 1331 9268 19",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Pay to NatWest, IBAN GB29 NWBK 6016 1331 9268 19, BIC NWBKGB2L."
+    },
+    "invoice_number": {
+     "value": "CCS-INV-2695",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # CCS-INV-2695"
+    },
+    "invoice_date": {
+     "value": "2026-11-02",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2 November 2026"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "GBP",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due £3,300.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0478",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Your PO PO-2026-0478"
+    },
+    "line_items": [
+     {
+      "description": "Platform subscription - Enterprise tier (Nov 2026)",
+      "sku": "CCS-PLAT-ENT",
+      "quantity": 1.0,
+      "unit_price": 2880.0,
+      "amount": 2880.0,
+      "page": 1,
+      "quote": "CCS-PLAT-ENT Platform subscription - Enterprise tier (Nov 2026) 1 £2,880.00 £2,880.00",
+      "confidence": "sure"
+     },
+     {
+      "description": "Premium support (Nov 2026)",
+      "sku": "CCS-SUP-PREM",
+      "quantity": 1.0,
+      "unit_price": 420.0,
+      "amount": 420.0,
+      "page": 1,
+      "quote": "CCS-SUP-PREM Premium support (Nov 2026) 1 £420.00 £420.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 2750.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Net amount £2,750.00"
+    },
+    "tax_amount": {
+     "value": 550.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Includes VAT (20%) £550.00"
+    },
+    "total": {
+     "value": 3300.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due £3,300.00"
+    },
+    "amounts_include_tax": true,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {},
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0478",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

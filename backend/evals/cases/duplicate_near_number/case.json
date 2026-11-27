@@ -1,0 +1,215 @@
+{
+ "id": "duplicate_near_number",
+ "scenario": "MIP-26-1105 processed; now MIP-2611-05 for a different amount",
+ "branch": "duplicate review: same characters, different number split",
+ "ps1": "duplicate detection",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "prior_1.pdf",
+   "role": "prior",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Meridian Industrial Parts Co.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Meridian Industrial Parts Co."
+    },
+    "vendor_tax_id": {
+     "value": "27-5544321",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax ID 27-5544321"
+    },
+    "vendor_bank_account": {
+     "value": "ABA 026009593, acct 330188420057",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Remit to Bank of America, ABA 026009593, acct 330188420057. Net 60."
+    },
+    "invoice_number": {
+     "value": "MIP-26-1105",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # MIP-26-1105"
+    },
+    "invoice_date": {
+     "value": "2026-11-05",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-05"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,450.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0455",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0455"
+    },
+    "line_items": [
+     {
+      "description": "Hydraulic pump seal kit HP-220",
+      "sku": "MIP-SK-220",
+      "quantity": 10.0,
+      "unit_price": 145.0,
+      "amount": 1450.0,
+      "page": 1,
+      "quote": "MIP-SK-220 Hydraulic pump seal kit HP-220 10 $145.00 $1,450.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 1450.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $1,450.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax (0% - resale cert. on file) $0.00"
+    },
+    "total": {
+     "value": 1450.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,450.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "approved",
+    "checks": {},
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": null,
+    "vendor": null,
+    "po_how": null
+   }
+  },
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Meridian Industrial Parts Co.",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Meridian Industrial Parts Co."
+    },
+    "vendor_tax_id": {
+     "value": "27-5544321",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax ID 27-5544321"
+    },
+    "vendor_bank_account": {
+     "value": "ABA 026009593, acct 330188420057",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Remit to Bank of America, ABA 026009593, acct 330188420057. Net 60."
+    },
+    "invoice_number": {
+     "value": "MIP-2611-05",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice # MIP-2611-05"
+    },
+    "invoice_date": {
+     "value": "2026-11-06",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice date 2026-11-06"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,740.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0455",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO number PO-2026-0455"
+    },
+    "line_items": [
+     {
+      "description": "Hydraulic pump seal kit HP-220",
+      "sku": "MIP-SK-220",
+      "quantity": 12.0,
+      "unit_price": 145.0,
+      "amount": 1740.0,
+      "page": 1,
+      "quote": "MIP-SK-220 Hydraulic pump seal kit HP-220 12 $145.00 $1,740.00",
+      "confidence": "sure"
+     }
+    ],
+    "subtotal": {
+     "value": 1740.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $1,740.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax (0% - resale cert. on file) $0.00"
+    },
+    "total": {
+     "value": 1740.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $1,740.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "duplicate": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0455",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}

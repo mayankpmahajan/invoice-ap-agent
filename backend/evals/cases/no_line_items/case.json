@@ -1,0 +1,103 @@
+{
+ "id": "no_line_items",
+ "scenario": "Summary invoice: a total for a period with no item table",
+ "branch": "line_detail review: no line items to check against the PO",
+ "ps1": "",
+ "as_of": "2026-11-28",
+ "master_patch": null,
+ "xfail": null,
+ "steps": [
+  {
+   "file": "invoice.pdf",
+   "role": "subject",
+   "pdf_kind": "digital",
+   "image_only_fields": [],
+   "extraction": {
+    "document_type": "invoice",
+    "vendor_name": {
+     "value": "Brightline Logistics LLC",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Brightline Logistics LLC"
+    },
+    "vendor_tax_id": {
+     "value": "46-7788990",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "EIN 46-7788990"
+    },
+    "vendor_bank_account": {
+     "value": "routing 121000248, account 771203945",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Wire to Wells Fargo, routing 121000248, account 771203945. Net 45."
+    },
+    "invoice_number": {
+     "value": "BL-26-10715",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Invoice No: BL-26-10715"
+    },
+    "invoice_date": {
+     "value": "2026-11-20",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Date: 2026-11-20"
+    },
+    "due_date": {
+     "value": null,
+     "confidence": "sure",
+     "page": null,
+     "quote": null
+    },
+    "currency": {
+     "value": "USD",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $5,550.00"
+    },
+    "po_reference": {
+     "value": "PO-2026-0461",
+     "confidence": "sure",
+     "page": 1,
+     "quote": "PO Ref: PO-2026-0461"
+    },
+    "line_items": [],
+    "subtotal": {
+     "value": 5550.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Subtotal $5,550.00"
+    },
+    "tax_amount": {
+     "value": 0.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Tax $0.00"
+    },
+    "total": {
+     "value": 5550.0,
+     "confidence": "sure",
+     "page": 1,
+     "quote": "Total due $5,550.00"
+    },
+    "amounts_include_tax": false,
+    "doubts": ""
+   },
+   "matcher": null,
+   "review": null,
+   "expected": {
+    "decision": "needs_review",
+    "checks": {
+     "line_detail": "review"
+    },
+    "status": "completed",
+    "how": "exact identifiers",
+    "settled_by": null,
+    "po": "PO-2026-0461",
+    "vendor": null,
+    "po_how": null
+   }
+  }
+ ]
+}
