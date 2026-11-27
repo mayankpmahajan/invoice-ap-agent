@@ -112,7 +112,7 @@ async def _start(filename: str, data: bytes) -> RunSummary:
     async with Session() as s:
         s.add(run)
         await s.commit()
-    task = asyncio.create_task(run_pipeline(run.id, data))
+    task = asyncio.create_task(run_pipeline(run.id, data), name=run.id)
     _tasks.add(task)
     task.add_done_callback(_tasks.discard)
     return _summary(run)
@@ -270,16 +270,45 @@ async def run_sample(name: str) -> RunSummary:
     return await _start(name, path.read_bytes())
 
 
-@app.post("/api/reset")
-async def reset() -> dict[str, str]:
-    """Demo helper: clears runs and the invoice ledger (master data stays)."""
+async def _clear_history() -> None:
     if _tasks:
         raise HTTPException(409, "Wait for running invoices to finish")
     async with Session() as s:
         for model in (RunEvent, LedgerInvoice, Run):
             await s.execute(delete(model))
         await s.commit()
+
+
+@app.post("/api/reset")
+async def reset() -> dict[str, str]:
+    """Demo helper: clears runs and the invoice ledger (master data stays)."""
+    await _clear_history()
     return {"status": "ok"}
+
+
+async def _run_batch(names: list[str]) -> None:
+    """One sample at a time, each to completion: later samples (split PO, re-sent duplicate) depend on the
+    ledger the earlier ones leave behind, so starting them together would make the outcomes order-dependent."""
+    for name in names:
+        summary = await _start(name, (SAMPLES_DIR / name).read_bytes())
+        while True:
+            run_tasks = [t for t in _tasks if t.get_name() == summary.id]
+            if not run_tasks:
+                break
+            await asyncio.wait(run_tasks)
+
+
+@app.post("/api/samples/batch", response_model=list[str])
+async def run_sample_batch() -> list[str]:
+    """Demo helper: clear history, then run every sample in file order. Returns the order it will run in."""
+    names = sorted(p.name for p in SAMPLES_DIR.glob("*.pdf"))
+    if not names:
+        raise HTTPException(404, "No sample invoices")
+    await _clear_history()
+    task = asyncio.create_task(_run_batch(names), name="sample-batch")
+    _tasks.add(task)
+    task.add_done_callback(_tasks.discard)
+    return names
 
 
 if FRONTEND_DIST.exists():  # single-process deploy: serve the built UI

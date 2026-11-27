@@ -35,7 +35,7 @@ export default function Dashboard() {
       <section aria-label="Batch control totals" className="flex flex-wrap items-stretch gap-x-6 gap-y-3">
         <div className="flex flex-col justify-center">
           <h1 className="title text-[28px] leading-none">Voucher register</h1>
-          <button onClick={() => reset.mutate()} disabled={reset.isPending}
+          <button onClick={() => { if (window.confirm("Clear every processed invoice from the register? Vendors and POs stay.")) reset.mutate(); }} disabled={reset.isPending}
             className="mt-2 inline-flex items-center gap-1.5 self-start text-xs font-semibold text-muted hover:text-ink disabled:opacity-50">
             <RotateCcw className="size-3.5" /> Clear demo history
           </button>
@@ -158,7 +158,12 @@ function Intake({ onStarted }: { onStarted: (id: string) => void }) {
     mutationFn: (name: string) => unwrap(api.POST("/api/samples/{name}/run", { params: { path: { name } } })),
     onSuccess: (r) => onStarted(r.id),
   });
-  const err = (upload.error ?? sample.error) as Error | null;
+  const qc = useQueryClient();
+  const batch = useMutation({
+    mutationFn: () => unwrap(api.POST("/api/samples/batch")),
+    onSuccess: () => qc.invalidateQueries(),
+  });
+  const err = (upload.error ?? sample.error ?? batch.error) as Error | null;
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -180,7 +185,14 @@ function Intake({ onStarted }: { onStarted: (id: string) => void }) {
       <section className="sheet bg-manila">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 border-b border-[#cdbf96] px-4 py-2.5">
           <h2 className="title text-lg">Test batch</h2>
-          <span className="text-xs text-[#5e5230]">Run in order: later invoices depend on earlier ones</span>
+          <span className="flex flex-wrap items-baseline gap-x-3 text-xs text-[#5e5230]">
+            Run in order: later invoices depend on earlier ones
+            <button onClick={() => { if (window.confirm("Clear the register and run all sample invoices in order?")) batch.mutate(); }}
+              disabled={batch.isPending || !samples.data?.length}
+              className="font-semibold text-ink underline-offset-2 hover:underline disabled:opacity-50">
+              {batch.isPending ? "Starting…" : "Clear and run all in order"}
+            </button>
+          </span>
         </div>
         {samples.isLoading ? <div className="p-4"><Skeleton className="h-28" /></div> : samples.isError ? (
           <div className="p-4"><ErrorNote message="sample invoices could not be listed." onRetry={() => samples.refetch()} /></div>

@@ -21,7 +21,7 @@ Dev UI with hot reload: `cd frontend && npm run dev` (proxies `/api` to :8077). 
 - **Decide** - deterministic rules in `app/rules.py`; the model reads, code decides. Any reject → rejected, any review → needs review, else approved.
 - **Audit** - every run stores the model ids, prompt versions + hashes, reasoning effort, tokens, file SHA-256 and code version.
 
-## Edge cases (demo order matters: run 01→06)
+## Edge cases (demo order matters: run 01→06, or use **Clear and run all in order** on the dashboard)
 | File | Scenario | Expected |
 |---|---|---|
 | 01 | Clean invoice, explicit PO | Approved |
