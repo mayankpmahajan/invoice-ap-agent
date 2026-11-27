@@ -36,7 +36,7 @@ def ledger(**kw):
 
 
 def test_invoice_number_normalisation_ignores_formatting():
-    assert rules.norm_invoice_number("INV-0042") == rules.norm_invoice_number("inv 42") == "INV42"
+    assert rules.norm_invoice_number("INV-0042") == rules.norm_invoice_number("inv 42") == rules.norm_invoice_number("INV42")
     assert rules.norm_invoice_number("INV-0042") != rules.norm_invoice_number("INV-0043")
 
 
@@ -109,3 +109,59 @@ def test_decision_precedence():
     assert rules.decide([mk("pass"), mk("review"), mk("reject")])[0] == "rejected"
     assert rules.decide([mk("pass"), mk("review")])[0] == "needs_review"
     assert rules.decide([mk("pass"), mk("info")])[0] == "approved"
+
+
+def test_invoice_number_segments_are_identity():
+    assert rules.norm_invoice_number("2026-1-15") != rules.norm_invoice_number("2026-11-5")
+    assert rules.norm_invoice_number("INV-1-02") != rules.norm_invoice_number("INV-10-2")
+
+
+def test_differently_split_number_is_a_near_duplicate_hold_not_a_reject():
+    c = rules.check_duplicate(inv(number="INV-10-2"), "V-1", "h1",
+                              [ledger(invoice_number="INV-1-02", invoice_date=date(2025, 1, 1), total=1.0)])
+    assert (c.outcome, c.evidence["match"]) == ("review", "near-number")
+
+
+def test_dates_outside_plausible_window_are_held():
+    po = rules.PORec("PO-1", "V-1", "USD", "open", PO.lines, date(2026, 10, 1))
+    today = date(2026, 11, 28)
+    assert rules.check_dates(inv(), po, today).outcome == "pass"  # invoice dated 2026-11-01
+    future = inv(); future.invoice_date.value = "2031-01-01"
+    stale = inv(); stale.invoice_date.value = "2019-05-01"
+    early = inv(); early.invoice_date.value = "2026-09-20"
+    for ex in (future, stale, early):
+        assert rules.check_dates(ex, po, today).outcome == "review", ex.invoice_date.value
+
+
+def test_tax_id_mismatch_is_held_and_labels_are_ignored():
+    assert rules.check_tax_id(VENDOR, inv()).outcome == "pass"
+    labelled = inv(); labelled.vendor_tax_id.value = "Tax ID 27-5544321"
+    assert rules.check_tax_id(VENDOR, labelled).outcome == "pass"
+    wrong = inv(); wrong.vendor_tax_id.value = "99-0000001"
+    assert rules.check_tax_id(VENDOR, wrong).outcome == "review"
+
+
+def _outcomes(ex, line_map=("PO-1#1",)):
+    return {c.id: c.outcome for c in rules.check_lines_against_po(PO, ex, list(line_map), [])}
+
+
+def test_empty_lump_sum_or_negative_lines_are_held():
+    empty = inv(); empty.line_items = []
+    assert _outcomes(empty, ())["line_detail"] == "review"
+    lump = inv(); lump.line_items[0].quantity = None
+    assert _outcomes(lump)["line_detail"] == "review"
+    neg = inv(qty=-5)
+    assert _outcomes(neg)["line_detail"] == "review"
+
+
+def test_close_price_inside_tolerance_is_noted_not_held():
+    close = _outcomes(inv(qty=30, price=145.5))  # +15.00 on 4,350 (0.3%)
+    assert close["price_variance"] == "info" and "line_detail" not in close
+    assert _outcomes(inv(qty=30))["price_variance"] == "pass"
+
+
+def test_headline_names_the_deciding_reason():
+    held = rules.check_lines_against_po(PO, inv(qty=50), ["PO-1#1"], [ledger()])
+    decision, headline, _ = rules.decide(held)
+    assert decision == "needs_review" and headline == "Held for a person: Over-billing the PO"
+    assert rules.decide([rules.Check("a", "A", "pass", "ok")])[1] == "Approved: all 1 checks passed"

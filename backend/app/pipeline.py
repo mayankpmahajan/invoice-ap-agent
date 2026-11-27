@@ -6,10 +6,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 import traceback
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Any
 
 from sqlalchemy import select
@@ -51,7 +52,7 @@ async def load_master() -> tuple[list[rules.VendorRec], list[rules.PORec]]:
         for po in (await s.scalars(select(PurchaseOrder))).all():
             pos.append(rules.PORec(po.po_number, po.vendor_id, po.currency, po.status, [
                 rules.POLineRec(f"{l.po_number}#{l.line_no}", l.sku, l.description, l.quantity, l.unit_price)
-                for l in lines if l.po_number == po.po_number]))
+                for l in lines if l.po_number == po.po_number], po.issue_date))
     return vendors, pos
 
 
@@ -186,6 +187,7 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
     checks = [rules.check_document_type(ex), rules.check_required_fields(ex),
               rules.check_grounding(ex, verified, ing.kind == "digital"), rules.check_arithmetic(ex)]
     await emit(run_id, "verify", "completed", "Extraction verified", {"checks": [c.__dict__ for c in checks]})
+    await _pace()
 
     if ex.document_type == "not_an_invoice":
         return await _finish(run_id, ing, ex, checks, None, None, [], calls, started, {"how": "skipped"})
@@ -204,19 +206,25 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
                       "doubt": decision.doubt_reason}
     else:
         decision = None
-    checks += [rules.check_vendor(vendor, ex), rules.check_bank_details(vendor, ex),
-               rules.check_po(po, vendor.vendor_id if vendor else None, ex, how,
-                              decision.confidence if decision else "sure", decision.doubt_reason if decision else None)]
+    match_checks = [rules.check_vendor(vendor, ex), rules.check_tax_id(vendor, ex), rules.check_bank_details(vendor, ex),
+                    rules.check_po(po, vendor.vendor_id if vendor else None, ex, how,
+                                   decision.confidence if decision else "sure",
+                                   decision.doubt_reason if decision else None),
+                    rules.check_dates(ex, po, date.today())]
+    match_checks = [c for c in match_checks if c is not None]
+    checks += match_checks
     match_info.update({"vendor": vendor.__dict__ if vendor else None, "po_number": po.po_number if po else None,
                        "po_how": how, "line_map": line_map})
     await emit(run_id, "match", "completed",
                f"{vendor.name if vendor else 'Unknown vendor'} / {po.po_number if po else 'no PO'}",
-               {**match_info, "checks": [c.__dict__ for c in checks[-3:]]})
+               {**match_info, "checks": [c.__dict__ for c in match_checks]})
+    await _pace()
 
     await emit(run_id, "duplicate", "started", "Searching processed invoices")
     dup = rules.check_duplicate(ex, vendor.vendor_id if vendor else None, ing.sha256, ledger)
     checks.append(dup)
     await emit(run_id, "duplicate", "completed", dup.detail, {"checks": [dup.__dict__], "ledger_size": len(ledger)})
+    await _pace()
 
     await emit(run_id, "po_checks", "started", "Comparing prices, quantities and PO balance")
     if dup.outcome == "reject":
@@ -234,12 +242,21 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
                {"checks": [c.__dict__ for c in po_checks],
                 "po": {"po_number": po.po_number, "total": po.total, "currency": po.currency,
                        "lines": [l.__dict__ for l in po.lines]} if po else None})
+    await _pace()
 
     await _finish(run_id, ing, ex, checks, vendor, po, line_map, calls, started, match_info)
 
 
+async def _pace() -> None:
+    """The checks after the read finish in milliseconds; a short pause lets a person watching the live view see
+    each stage land instead of five at once. Display only: no result depends on it (0 disables)."""
+    if settings.STAGE_MIN_VISIBLE_SECONDS > 0:
+        await asyncio.sleep(settings.STAGE_MIN_VISIBLE_SECONDS)
+
+
 async def _finish(run_id, ing, ex, checks, vendor, po, line_map, calls, started, match_info) -> None:
-    decision, summary = rules.decide(checks)
+    decision, headline, details = rules.decide(checks)
+    summary = f"{headline}. {details}"
     provenance = {"file_sha256": ing.sha256, "pipeline_git_sha": settings.PIPELINE_GIT_SHA,
                   "started_at": started.isoformat(), "finished_at": utcnow().isoformat(), "llm_calls": calls}
     line_qty: dict[str, float] = {}
@@ -253,7 +270,7 @@ async def _finish(run_id, ing, ex, checks, vendor, po, line_map, calls, started,
         run.invoice_number, run.total, run.currency = ex.invoice_number.value, ex.total.value, ex.currency.value
         run.po_number = po.po_number if po else ex.po_reference.value
         run.result = json.loads(json.dumps({
-            "decision": decision, "summary": summary, "checks": [c.__dict__ for c in checks],
+            "decision": decision, "headline": headline, "summary": details, "checks": [c.__dict__ for c in checks],
             "extraction": ex.model_dump(), "match": match_info, "provenance": provenance,
             "page_count": len(ing.pages)}, default=str))
         s.add(LedgerInvoice(run_id=run_id, vendor_id=vendor.vendor_id if vendor else None,
@@ -263,7 +280,10 @@ async def _finish(run_id, ing, ex, checks, vendor, po, line_map, calls, started,
                             net_amount=rules.net_amount(ex), currency=ex.currency.value,
                             po_number=po.po_number if po else None, file_hash=ing.sha256, status=decision,
                             po_line_quantities=line_qty))
+        # The decision event is written in the same commit as the completed status, so a stream that sees the
+        # run completed never ends before the decision event exists.
+        run.current_stage = "decision"
+        s.add(RunEvent(run_id=run_id, stage="decision", status="completed", title=headline,
+                       data={"decision": decision, "headline": headline, "summary": details,
+                             "counts": {o: sum(c.outcome == o for c in checks) for o in ("pass", "info", "review", "reject")}}))
         await s.commit()
-    await emit(run_id, "decision", "completed", decision.replace("_", " ").upper(),
-               {"decision": decision, "summary": summary,
-                "counts": {o: sum(c.outcome == o for c in checks) for o in ("pass", "info", "review", "reject")}})

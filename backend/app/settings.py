@@ -90,18 +90,23 @@ MAX_UPLOAD_BYTES = _int("MAX_UPLOAD_BYTES", 20 * 1024 * 1024)
 TEXT_LAYER_MIN_CHARS_PER_PAGE = _int("TEXT_LAYER_MIN_CHARS_PER_PAGE", 40)
 
 # ---------------------------------------------------------------- AP policy
-# Price / amount tolerance: a variance is accepted if within EITHER bound.
+# Price / amount tolerance: a variance is accepted only within BOTH bounds (the tighter one wins).
 TOLERANCE_PCT = _float("TOLERANCE_PCT", 2.0)
 TOLERANCE_ABS = _float("TOLERANCE_ABS", 50.0)
 # Arithmetic checks on the invoice itself (rounding slack, in currency units).
 ARITHMETIC_SLACK = _float("ARITHMETIC_SLACK", 0.02)
 # Same vendor + same total within this many days, different invoice number -> possible duplicate.
 NEAR_DUPLICATE_WINDOW_DAYS = _int("NEAR_DUPLICATE_WINDOW_DAYS", 30)
+# Invoice dates: further in the future than this (time zones, early issue) or older than the max age -> review.
+INVOICE_FUTURE_GRACE_DAYS = _int("INVOICE_FUTURE_GRACE_DAYS", 2)
+INVOICE_MAX_AGE_DAYS = _int("INVOICE_MAX_AGE_DAYS", 365)
 # Fields whose extraction confidence must be "sure" (or verified against the text layer).
 CRITICAL_FIELDS = ("vendor_name", "invoice_number", "invoice_date", "total", "currency")
 
 # ---------------------------------------------------------------- SSE
 SSE_POLL_INTERVAL_SECONDS = _float("SSE_POLL_INTERVAL_SECONDS", 0.4)
+# Pause after each fast post-read stage so the live view shows them one by one (display only; 0 disables).
+STAGE_MIN_VISIBLE_SECONDS = _float("STAGE_MIN_VISIBLE_SECONDS", 0.6)
 
 # ---------------------------------------------------------------- provenance
 def _git_sha() -> str:

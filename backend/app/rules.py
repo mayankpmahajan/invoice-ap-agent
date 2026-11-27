@@ -33,6 +33,9 @@ FLAGGED_TITLES: dict[str, str | dict[str, str]] = {
     "Currency matches PO": "Currency differs from PO",
     "Prices within tolerance": "Prices outside tolerance",
     "Every line is on the PO": "Lines not on the PO",
+    "Every line has a quantity and price": "Lines missing quantity or price",
+    "Tax ID matches vendor record": "Tax ID differs from vendor record",
+    "Invoice date is plausible": "Invoice date needs a person",
     "PO has enough remaining": "Over-billing the PO",
 }
 
@@ -80,6 +83,7 @@ class PORec:
     currency: str
     status: str
     lines: list[POLineRec]
+    issue_date: date | None = None
 
     @property
     def total(self) -> float:
@@ -103,7 +107,19 @@ class LedgerRec:
 
 # ------------------------------------------------------------------ helpers
 def norm_invoice_number(s: str | None) -> str | None:
-    """INV-0042, inv 42, INV#042 -> INV42: case, punctuation and leading zeros are formatting, not identity."""
+    """INV-0042, inv 42, INV#042 -> INV-42: case, punctuation and leading zeros are formatting, not identity.
+
+    The number is split into runs of letters and runs of digits, so segment boundaries survive: 2026-1-15 and
+    2026-11-5 stay different, while INV42 and INV-0042 (same runs) stay equal."""
+    if not s:
+        return None
+    runs = re.findall(r"[A-Z]+|\d+", s.upper())
+    return "-".join(str(int(r)) if r.isdigit() else r for r in runs) or None
+
+
+def collapsed_invoice_number(s: str | None) -> str | None:
+    """Every separator and boundary dropped. Equal collapsed numbers with different runs are a near match:
+    possibly the same invoice re-typed, possibly two different invoices, so a person decides."""
     if not s:
         return None
     alnum = re.sub(r"[^A-Z0-9]", "", s.upper())
@@ -112,6 +128,15 @@ def norm_invoice_number(s: str | None) -> str | None:
 
 def norm_account(s: str | None) -> str:
     return re.sub(r"[^A-Z0-9]", "", (s or "").upper())
+
+
+def same_tax_id(printed: str | None, on_file: str) -> bool:
+    """Labels and formatting differ by country ("EIN 84-1234567", "VAT GB 293 4471 02"), so compare the digits
+    when both carry a real number, else the letters and digits."""
+    pd, fd = re.sub(r"\D", "", printed or ""), re.sub(r"\D", "", on_file)
+    if len(pd) >= 6 and len(fd) >= 6:
+        return pd == fd
+    return norm_account(printed) == norm_account(on_file)
 
 
 def within_tolerance(actual: float, expected: float) -> bool:
@@ -201,6 +226,23 @@ def check_arithmetic(ex: InvoiceExtraction) -> Check:
                  f"Lines sum to {line_sum}; subtotal, tax and total are consistent.", {"line_sum": line_sum})
 
 
+def check_dates(ex: InvoiceExtraction, po: PORec | None, today: date) -> Check | None:
+    inv = parse_date(ex.invoice_date.value)
+    if inv is None:
+        return None  # a missing date is already held by required_fields
+    problems = []
+    if (inv - today).days > settings.INVOICE_FUTURE_GRACE_DAYS:
+        problems.append(f"dated {inv.isoformat()}, which is in the future")
+    if (today - inv).days > settings.INVOICE_MAX_AGE_DAYS:
+        problems.append(f"dated {inv.isoformat()}, more than {settings.INVOICE_MAX_AGE_DAYS} days ago")
+    if po is not None and po.issue_date and inv < po.issue_date:
+        problems.append(f"dated before {po.po_number} was issued ({po.issue_date.isoformat()})")
+    if problems:
+        return Check("dates", "Invoice date is plausible", "review", "Invoice is " + "; ".join(problems) + ".",
+                     {"invoice_date": inv.isoformat()})
+    return Check("dates", "Invoice date is plausible", "pass", f"Dated {inv.isoformat()}.")
+
+
 # ------------------------------------------------------------------ checks: vendor
 def check_vendor(vendor: VendorRec | None, ex: InvoiceExtraction) -> Check:
     if vendor is None:
@@ -212,6 +254,18 @@ def check_vendor(vendor: VendorRec | None, ex: InvoiceExtraction) -> Check:
                      {"vendor_id": vendor.vendor_id})
     return Check("vendor", "Vendor is approved", "pass", f"Matched {vendor.name} ({vendor.vendor_id}), approved.",
                  {"vendor_id": vendor.vendor_id})
+
+
+def check_tax_id(vendor: VendorRec | None, ex: InvoiceExtraction) -> Check | None:
+    printed = ex.vendor_tax_id.value
+    if vendor is None or not printed:
+        return None
+    if same_tax_id(printed, vendor.tax_id):
+        return Check("tax_id", "Tax ID matches vendor record", "pass", f"Printed tax ID matches {vendor.name}'s record.")
+    return Check("tax_id", "Tax ID matches vendor record", "review",
+                 f"The invoice prints tax ID {printed}, but {vendor.name}'s record has {vendor.tax_id}. "
+                 "Either the vendor was matched on its name only, or the invoice is not from this vendor.",
+                 {"printed": printed, "on_file": vendor.tax_id})
 
 
 def check_bank_details(vendor: VendorRec | None, ex: InvoiceExtraction) -> Check:
@@ -239,11 +293,18 @@ def check_duplicate(ex: InvoiceExtraction, vendor_id: str | None, file_hash: str
                          {"original_run": r.run_id, "match": "file"})
     num = norm_invoice_number(ex.invoice_number.value)
     for r in live:
-        if num and vendor_id and r.vendor_id == vendor_id and r.invoice_number_norm == num:
+        if num and vendor_id and r.vendor_id == vendor_id and norm_invoice_number(r.invoice_number) == num:
             return Check("duplicate", "Not a duplicate", "reject",
                          f"Invoice {ex.invoice_number.value} from this vendor was already processed as "
                          f"{r.invoice_number} (same number once formatting is ignored).",
                          {"original_run": r.run_id, "match": "vendor+number"})
+    flat = collapsed_invoice_number(ex.invoice_number.value)
+    for r in live:
+        if flat and vendor_id and r.vendor_id == vendor_id and collapsed_invoice_number(r.invoice_number) == flat:
+            return Check("duplicate", "Not a duplicate", "review",
+                         f"Invoice {ex.invoice_number.value} looks like {r.invoice_number}, already processed for this "
+                         "vendor, but the number is split differently. It may be the same invoice re-typed.",
+                         {"original_run": r.run_id, "match": "near-number"})
     inv_date, total = parse_date(ex.invoice_date.value), ex.total.value
     for r in live:
         if (vendor_id and r.vendor_id == vendor_id and total is not None and r.total is not None
@@ -292,18 +353,29 @@ def check_lines_against_po(po: PORec | None, ex: InvoiceExtraction, line_map: li
     if po is None:
         return []
     by_id = {l.id: l for l in po.lines}
-    price_issues, unmapped, qty_issues = [], [], []
+    price_issues, price_notes, unmapped, qty_issues, detail_issues = [], [], [], [], []
+    if not ex.line_items:
+        detail_issues.append("the invoice has no line items, so nothing can be checked against the PO")
     this_qty: dict[str, float] = {}
     for i, (li, lid) in enumerate(zip(ex.line_items, line_map), 1):
+        if li.quantity is None or li.unit_price is None:
+            detail_issues.append(f"line {i} '{li.description}' has no {'quantity' if li.quantity is None else 'unit price'}"
+                                 " (a bundled or lump-sum line), so its price cannot be checked")
+        elif li.quantity < 0 or li.unit_price < 0:
+            detail_issues.append(f"line {i} '{li.description}' has a negative quantity or price")
         pl = by_id.get(lid or "")
         if pl is None:
             unmapped.append(f"line {i} '{li.description}'")
             continue
         # Tolerance applies to the line's money at stake (qty x price), not to the unit price alone.
         q = li.quantity or 0
-        if li.unit_price is not None and not within_tolerance(q * li.unit_price, q * pl.unit_price):
-            price_issues.append(f"line {i}: billed {li.unit_price} vs PO {pl.unit_price} "
-                                f"({q:g} units, {q * (li.unit_price - pl.unit_price):+,.2f})")
+        if li.unit_price is not None and q:
+            variance = q * (li.unit_price - pl.unit_price)
+            note = f"line {i}: billed {li.unit_price} vs PO {pl.unit_price} ({q:g} units, {variance:+,.2f})"
+            if not within_tolerance(q * li.unit_price, q * pl.unit_price):
+                price_issues.append(note)
+            elif abs(variance) > settings.ARITHMETIC_SLACK:
+                price_notes.append(note)
         this_qty[pl.id] = this_qty.get(pl.id, 0) + (li.quantity or 0)
 
     prior = [r for r in ledger if r.po_number == po.po_number and r.status == "approved"]
@@ -314,11 +386,19 @@ def check_lines_against_po(po: PORec | None, ex: InvoiceExtraction, line_map: li
             qty_issues.append(f"'{pl.description}': PO allows {pl.quantity:g}, {already:g} already invoiced, "
                               f"this invoice bills {q:g} (over by {already + q - pl.quantity:g})")
 
-    checks = [
-        Check("price_variance", "Prices within tolerance", "review" if price_issues else "pass",
-              "; ".join(price_issues) if price_issues else
-              f"Every line within {settings.TOLERANCE_PCT:g}% and {settings.TOLERANCE_ABS:g} of the PO price."),
-    ]
+    bound = f"{settings.TOLERANCE_PCT:g}% and {settings.TOLERANCE_ABS:g}"
+    if price_issues:
+        price = Check("price_variance", "Prices within tolerance", "review",
+                      f"Beyond the {bound} tolerance: " + "; ".join(price_issues))
+    elif price_notes:
+        price = Check("price_variance", "Prices within tolerance", "info",
+                      f"Close but not exact, inside the {bound} tolerance: " + "; ".join(price_notes))
+    else:
+        price = Check("price_variance", "Prices within tolerance", "pass", "Every line is billed at the PO price.")
+    checks = [price]
+    if detail_issues:
+        checks.append(Check("line_detail", "Every line has a quantity and price", "review",
+                            "; ".join(detail_issues).capitalize() + "."))
     if unmapped:
         checks.append(Check("line_mapping", "Every line is on the PO", "review",
                             "Not on the PO: " + "; ".join(unmapped)))
@@ -340,11 +420,17 @@ def check_lines_against_po(po: PORec | None, ex: InvoiceExtraction, line_map: li
 
 
 # ------------------------------------------------------------------ decision
-def decide(checks: list[Check]) -> tuple[str, str]:
+def decide(checks: list[Check]) -> tuple[str, str, str]:
+    """(decision, headline, details). The headline is the one line a buyer reads first: the verdict and the
+    reason that decided it; details carry every flagged check."""
     rejects = [c for c in checks if c.outcome == "reject"]
     reviews = [c for c in checks if c.outcome == "review"]
-    if rejects:
-        return "rejected", " ".join(c.detail for c in rejects)
-    if reviews:
-        return "needs_review", " ".join(c.detail for c in reviews)
-    return "approved", "All checks passed: approved for payment."
+    if rejects or reviews:
+        flagged = rejects + reviews
+        more = f" (+{len(flagged) - 1} more)" if len(flagged) > 1 else ""
+        decision = "rejected" if rejects else "needs_review"
+        verb = "Void" if rejects else "Held for a person"
+        return decision, f"{verb}: {flagged[0].title}{more}", " ".join(c.detail for c in flagged)
+    notes = [c for c in checks if c.outcome == "info"]
+    return ("approved", f"Approved: all {len(checks)} checks passed",
+            " ".join(c.detail for c in notes) or "Every check passed.")
