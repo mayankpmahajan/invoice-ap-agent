@@ -189,7 +189,8 @@ async def _run(run_id: str, pdf_bytes: bytes) -> None:
     await emit(run_id, "verify", "completed", "Extraction verified", {"checks": [c.__dict__ for c in checks]})
     await _pace()
 
-    if ex.document_type == "not_an_invoice":
+    # Nothing to match: a non-invoice is void, an unreadable document is held for a person (document_type check).
+    if ex.document_type in ("not_an_invoice", "unreadable"):
         return await _finish(run_id, ing, ex, checks, None, None, [], calls, started, {"how": "skipped"})
 
     await emit(run_id, "match", "started", "Matching vendor and purchase order")
