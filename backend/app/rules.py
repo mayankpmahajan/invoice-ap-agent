@@ -334,7 +334,8 @@ def check_duplicate(ex: InvoiceExtraction, vendor_id: str | None, file_hash: str
                 and abs((inv_date - r.invoice_date).days) <= settings.NEAR_DUPLICATE_WINDOW_DAYS):
             return Check("duplicate", "Not a duplicate", "review",
                          f"Same vendor and same total as invoice {r.invoice_number} within "
-                         f"{settings.NEAR_DUPLICATE_WINDOW_DAYS} days, under a different number. Possible re-billing.",
+                         f"{settings.NEAR_DUPLICATE_WINDOW_DAYS} days, under a different number. Possible re-billing; "
+                         "if it is a recurring charge for a new billing period, approve it.",
                          {"original_run": r.run_id, "match": "vendor+total+date"})
     return Check("duplicate", "Not a duplicate", "pass", "No earlier invoice with this file, number, or amount pattern.")
 

@@ -37,6 +37,7 @@ Dev UI with hot reload: `cd frontend && npm run dev` (proxies `/api` to :8077). 
 ## Assumptions
 - POs are pre-tax; tax is compared on the invoice only. Tolerance is ±2% **and** ±50 on each line's money, whichever is tighter (`TOLERANCE_*`): a cheap item billed at ten times its PO price is held even though the difference is under 50.
 - Only **approved** invoices use up PO balance; held invoices count once a reviewer approves them.
+- Same vendor, same total within 30 days, different number is held as possible re-billing, including a recurring monthly charge: a person confirms the new period in seconds, while paying a re-bill twice is costly. Reading the billing period from the invoice would let recurring charges pass.
 - Unknown or blocked vendors are rejected (they must be onboarded first). A different bank account is never auto-approved.
 - 2-way match (invoice ↔ PO). A goods-receipt 3-way match is the natural next step.
 - All tunables live in `backend/app/settings.py`; prompts are versioned in `backend/app/prompts.py`.

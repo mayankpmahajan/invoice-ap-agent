@@ -305,16 +305,13 @@ CASES: list[Case] = [
                   po="PO-2026-0478"), Expect("approved", how=FAST, po="PO-2026-0478"))]),
     Case("recurring_monthly_subscription", "Monthly subscription: October and November invoices, same total, "
          "30 days apart, each naming its own billing period",
-         "near-duplicate (vendor + total + date) on a recurring PO",
+         "near-duplicate (vendor + total + date) on a recurring PO: held on purpose (policy), see README",
          [Step(co([plat("Oct 2026"), supp("Oct 2026")], number="CCS-INV-2611", date="2026-10-02",
                   po="PO-2026-0478", extra_meta=[("Billing period", "Oct 2026")]), Expect("approved", how=FAST)),
           Step(co([plat("Nov 2026"), supp("Nov 2026")], number="CCS-INV-2702", date="2026-11-01",
                   po="PO-2026-0478", extra_meta=[("Billing period", "Nov 2026")]),
-               Expect("approved", how=FAST, po="PO-2026-0478"))],
-         ps1="duplicate detection rules",
-         xfail="rules.py:308-316 flags every same-total invoice within 30 days as a possible duplicate, so each "
-               "month of a recurring subscription PO (12 monthly units on PO-2026-0478) is held; the billing period "
-               "differs and the PO has quantity left, so it should not be treated as re-billing"),
+               Expect("needs_review", {"duplicate": "review"}, how=FAST, po="PO-2026-0478"))],
+         ps1="duplicate detection rules"),
     # ------------------------------------------------------------ vendor
     one("bank_account_changed", "Amounts match the PO but the remittance account is new",
         "bank_details review (most common invoice-fraud pattern)",

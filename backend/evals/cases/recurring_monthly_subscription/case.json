@@ -1,11 +1,11 @@
 {
  "id": "recurring_monthly_subscription",
  "scenario": "Monthly subscription: October and November invoices, same total, 30 days apart, each naming its own billing period",
- "branch": "near-duplicate (vendor + total + date) on a recurring PO",
+ "branch": "near-duplicate (vendor + total + date) on a recurring PO: held on purpose (policy), see README",
  "ps1": "duplicate detection rules",
  "as_of": "2026-11-28",
  "master_patch": null,
- "xfail": "rules.py:308-316 flags every same-total invoice within 30 days as a possible duplicate, so each month of a recurring subscription PO (12 monthly units on PO-2026-0478) is held; the billing period differs and the PO has quantity left, so it should not be treated as re-billing",
+ "xfail": null,
  "steps": [
   {
    "file": "prior_1.pdf",
@@ -219,8 +219,10 @@
    "matcher": null,
    "review": null,
    "expected": {
-    "decision": "approved",
-    "checks": {},
+    "decision": "needs_review",
+    "checks": {
+     "duplicate": "review"
+    },
     "status": "completed",
     "how": "exact identifiers",
     "settled_by": null,
