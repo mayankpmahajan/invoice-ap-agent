@@ -6,6 +6,7 @@ Usage: uv run python scripts/gen_invoices.py
 from __future__ import annotations
 
 import io
+import json
 import random
 from pathlib import Path
 
@@ -26,8 +27,9 @@ def money(v: float, cur: str = "$") -> str:
 
 def draw_invoice(path: Path, *, vendor: dict, bill_to: str, meta: list[tuple[str, str]],
                  lines: list[tuple], tax_label: str, tax_rate: float, cur: str = "$",
-                 footer: list[str] = (), accent=colors.HexColor("#1f3a5f"), show_sku=True) -> None:
-    c = canvas.Canvas(str(path), pagesize=A4)
+                 footer: list[str] = (), accent=colors.HexColor("#1f3a5f"), show_sku=True,
+                 tax_included=False) -> None:
+    c = canvas.Canvas(str(path), pagesize=A4, invariant=1)  # invariant: same input -> same bytes -> same hash
     w, h = A4
     c.setFillColor(accent)
     c.rect(0, h - 38 * mm, w, 38 * mm, fill=1, stroke=0)
@@ -77,9 +79,15 @@ def draw_invoice(path: Path, *, vendor: dict, bill_to: str, meta: list[tuple[str
         c.drawRightString((cols[2] + 12) * mm, y, f"{qty:g}")
         c.drawRightString((cols[3] + 18) * mm, y, money(price, cur))
         c.drawRightString(w - 15 * mm, y, money(amt, cur))
-    tax = round(subtotal * tax_rate, 2)
+    if tax_included:  # prices already carry the tax: show the net and the tax inside the total
+        total = subtotal
+        tax = round(total - total / (1 + tax_rate), 2)
+        rows = (("Net amount", total - tax, False), (tax_label, tax, False), ("Total due", total, True))
+    else:
+        tax = round(subtotal * tax_rate, 2)
+        rows = (("Subtotal", subtotal, False), (tax_label, tax, False), ("Total due", subtotal + tax, True))
     y -= 12 * mm
-    for k, v, bold in (("Subtotal", subtotal, False), (tax_label, tax, False), ("Total due", subtotal + tax, True)):
+    for k, v, bold in rows:
         c.setFont("Helvetica-Bold" if bold else "Helvetica", 10 if bold else 9)
         c.drawString(130 * mm, y, k)
         c.drawRightString(w - 15 * mm, y, money(v, cur))
@@ -167,7 +175,61 @@ def main() -> None:
                  tax_label="VAT (0% - reverse charge)", tax_rate=0.0,
                  footer=["IMPORTANT: our bank details have changed. Please update your records.",
                          "Pay to: Revolut Business, IBAN GB71 REVO 0099 7012 3456 78, BIC REVOGB21."])
+
+    # 07/08 close but not exact, on the breakroom PO (coffee 24.00, cups 4.75), written dates instead of ISO.
+    # 07: coffee at 24.30 = +9.00 on 720 (1.25%): inside tolerance, approved with the variance noted.
+    draw_invoice(OUT / "07_price_close_northwind.pdf", vendor=NORTHWIND, bill_to=ACME,
+                 meta=[("Invoice #", "INV-0057"), ("Invoice date", "14 Nov 2026"), ("Due date", "14 Dec 2026"),
+                       ("PO number", "PO-2026-0430")],
+                 lines=[("NW-CF-1KG", "Arabica coffee beans 1kg", 30, 24.30)],
+                 tax_label="Sales tax (8.25%)", tax_rate=0.0825, footer=NW_FOOT)
+    # 08: cups at 5.40 = +52.00 on 380 (13.7%): beyond tolerance, held.
+    draw_invoice(OUT / "08_price_over_northwind.pdf", vendor=NORTHWIND, bill_to=ACME,
+                 meta=[("Invoice #", "INV-0061"), ("Invoice date", "19 November 2026"), ("Due date", "19 Dec 2026"),
+                       ("PO number", "PO-2026-0430")],
+                 lines=[("NW-CU-12", "Paper cups 12oz (sleeve of 50)", 80, 5.40)],
+                 tax_label="Sales tax (8.25%)", tax_rate=0.0825, footer=NW_FOOT)
+
+    # 09 scanned, no invoice number printed: held, and the reason tells AP what to ask the vendor for.
+    tmp = OUT / "_tmp9.pdf"
+    draw_invoice(tmp, vendor={"name": "Brightline Logistics LLC",
+                              "address": ["4100 W 47th St, Chicago IL 60632", "EIN 46-7788990  |  MC# 884213"]},
+                 bill_to=ACME, accent=colors.HexColor("#0b5d3b"), show_sku=False,
+                 meta=[("Invoice date", "11/18/2026"), ("PO", "PO-2026-0470"), ("Ship ref", "Pallets wk 46")],
+                 lines=[("", "LTL shipment Midwest region (per pallet)", 12, 165.00)],
+                 tax_label="Tax", tax_rate=0.0,
+                 footer=["Wire to Wells Fargo, routing 121000248, account 771203945. Net 45."])
+    to_scan(tmp, OUT / "09_scanned_missing_number_brightline.pdf", seed=9)
+
+    # 10 bundled and tax-inclusive: one lump line covering both PO lines (2,400 + 350 net), VAT inside the price.
+    draw_invoice(OUT / "10_bundled_vat_inclusive_cobalt.pdf",
+                 vendor={"name": "Cobalt Cloud Services Ltd",
+                         "address": ["21 Finsbury Square, London EC2A 1DX", "VAT GB 293 4471 02"]},
+                 bill_to=ACME, cur="£", accent=colors.HexColor("#3b2a6b"), show_sku=False, tax_included=True,
+                 meta=[("Invoice number", "CCS-INV-2702"), ("Invoice date", "20/11/2026"),
+                       ("Your PO", "PO-2026-0478")],
+                 lines=[("", "Managed cloud services as agreed (platform + support)", 1, 3300.00)],
+                 tax_label="Includes VAT (20%)", tax_rate=0.20,
+                 footer=["Prices include VAT. Pay to NatWest, IBAN GB29 NWBK 6016 1331 9268 19."])
+
+    (OUT / "manifest.json").write_text(json.dumps(MANIFEST, indent=2) + "\n")
     print("wrote", sorted(p.name for p in OUT.glob("*.pdf")))
+
+
+# What each sample shows and the decision it should get when the batch runs in file order.
+MANIFEST = {
+    "01_happy_northwind.pdf": {"expected": "approved", "scenario": "Clean invoice, explicit PO"},
+    "02_split_meridian_part1.pdf": {"expected": "approved", "scenario": "Split PO, part 1: 60 of 100 units"},
+    "03_split_meridian_part2.pdf": {"expected": "needs_review", "scenario": "Split PO, part 2: 50 more units, over-bills"},
+    "04_scanned_brightline_no_po.pdf": {"expected": "approved", "scenario": "Scan with no PO number: PO inferred"},
+    "05_duplicate_northwind_resend.pdf": {"expected": "rejected", "scenario": "01 re-sent as a scan, number reformatted"},
+    "06_bank_change_cobalt.pdf": {"expected": "needs_review", "scenario": "Amounts match, bank account changed"},
+    "07_price_close_northwind.pdf": {"expected": "approved", "scenario": "Price 1.25% over the PO: inside tolerance"},
+    "08_price_over_northwind.pdf": {"expected": "needs_review", "scenario": "Price 13.7% over the PO: beyond tolerance"},
+    "09_scanned_missing_number_brightline.pdf": {"expected": "needs_review", "scenario": "Scan with no invoice number"},
+    "10_bundled_vat_inclusive_cobalt.pdf": {"expected": "needs_review",
+                                            "scenario": "One bundled line, VAT inside the price"},
+}
 
 
 if __name__ == "__main__":

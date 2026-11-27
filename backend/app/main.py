@@ -257,9 +257,18 @@ async def master() -> dict[str, Any]:
     }
 
 
-@app.get("/api/samples", response_model=list[str])
-async def samples() -> list[str]:
-    return sorted(p.name for p in SAMPLES_DIR.glob("*.pdf"))
+class SampleOut(BaseModel):
+    name: str
+    expected: Literal["approved", "needs_review", "rejected"] | None = None
+    scenario: str | None = None
+
+
+@app.get("/api/samples", response_model=list[SampleOut])
+async def samples() -> list[SampleOut]:
+    """Sample invoices in run order, with the decision each should get when run in that order (manifest.json)."""
+    manifest_file = SAMPLES_DIR / "manifest.json"
+    manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
+    return [SampleOut(name=p.name, **manifest.get(p.name, {})) for p in sorted(SAMPLES_DIR.glob("*.pdf"))]
 
 
 @app.post("/api/samples/{name}/run", response_model=RunSummary)

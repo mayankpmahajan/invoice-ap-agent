@@ -154,7 +154,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Samples */
+        /**
+         * Samples
+         * @description Sample invoices in run order, with the decision each should get when run in that order (manifest.json).
+         */
         get: operations["samples_api_samples_get"];
         put?: never;
         post?: never;
@@ -355,6 +358,15 @@ export interface components {
             created_at: string;
             /** Finished At */
             finished_at: string | null;
+        };
+        /** SampleOut */
+        SampleOut: {
+            /** Name */
+            name: string;
+            /** Expected */
+            expected?: ("approved" | "needs_review" | "rejected") | null;
+            /** Scenario */
+            scenario?: string | null;
         };
         /** Stats */
         Stats: {
@@ -686,7 +698,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string[];
+                    "application/json": components["schemas"]["SampleOut"][];
                 };
             };
         };

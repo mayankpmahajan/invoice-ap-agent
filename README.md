@@ -10,7 +10,7 @@ cd ../backend && uv run uvicorn app.main:app --port 8077   # UI + API on http://
 uv run python scripts/demo_run.py                          # rehearse all demo invoices
 uv run pytest -q                                           # rule tests
 ```
-Dev UI with hot reload: `cd frontend && npm run dev` (proxies `/api` to :8077). Regenerate demo PDFs: `uv run python scripts/gen_invoices.py`.
+Dev UI with hot reload: `cd frontend && npm run dev` (proxies `/api` to :8077). Regenerate demo PDFs: `uv run python scripts/gen_invoices.py` (also writes `samples/manifest.json`, the expected outcome per sample shown on the dashboard).
 
 ## How it works
 `ingest → extract → verify → match → duplicate → po_checks → decision`, each stage streamed live (SSE, replayable after refresh).
@@ -29,6 +29,10 @@ Dev UI with hot reload: `cd frontend && npm run dev` (proxies `/api` to :8077). 
 | 04 | Scanned image, no PO number | PO inferred from vendor + line items |
 | 05 | Re-sent copy of 01 as a scan, number `INV42` vs `INV-0042` | Rejected as duplicate |
 | 06 | Amounts match, but bank account changed | Held: likely invoice fraud |
+| 07 | Price 1.25% over the PO (24.30 vs 24.00) | Approved, variance noted: inside the tolerance |
+| 08 | Price 13.7% over the PO (5.40 vs 4.75) | Held: beyond tolerance, and over the PO's remaining amount |
+| 09 | Scan with no invoice number | Held: asks the vendor for a corrected invoice |
+| 10 | One bundled line, VAT inside the price | Held: the bundle cannot be matched to PO lines |
 
 ## Assumptions
 - POs are pre-tax; tax is compared on the invoice only. Tolerance is ±2% **and** ±50 on each line's money, whichever is tighter (`TOLERANCE_*`): a cheap item billed at ten times its PO price is held even though the difference is under 50.

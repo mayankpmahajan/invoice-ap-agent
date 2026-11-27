@@ -14,6 +14,7 @@ const FILTERS = [
 ];
 
 const prettySample = (n: string) => n.replace(/\.pdf$/, "").replace(/^\d+_/, "").replace(/_/g, " ");
+const EXPECTED_LABEL = { approved: "approve", needs_review: "hold", rejected: "void" } as const;
 
 export default function Dashboard() {
   const [filter, setFilter] = useState("");
@@ -198,12 +199,15 @@ function Intake({ onStarted }: { onStarted: (id: string) => void }) {
           <div className="p-4"><ErrorNote message="sample invoices could not be listed." onRetry={() => samples.refetch()} /></div>
         ) : !samples.data?.length ? <div className="p-4"><Empty title="No sample invoices">Add PDFs to the samples folder.</Empty></div> : (
           <ol className="grid sm:grid-cols-2">
-            {samples.data.map((n, i) => (
-              <li key={n} className={cx("border-[#d9cca6]", i % 2 === 0 && "sm:border-r", i >= 2 && "sm:border-t", i >= 1 && "max-sm:border-t")}>
-                <button onClick={() => sample.mutate(n)} disabled={sample.isPending}
+            {samples.data.map((smp, i) => (
+              <li key={smp.name} className={cx("border-[#d9cca6]", i % 2 === 0 && "sm:border-r", i >= 2 && "sm:border-t", i >= 1 && "max-sm:border-t")}>
+                <button onClick={() => sample.mutate(smp.name)} disabled={sample.isPending} title={smp.scenario ?? undefined}
                   className="group flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-paper/60 disabled:opacity-50">
                   <span className="typed w-5 text-xs text-[#5e5230]">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium first-letter:uppercase">{prettySample(n)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium first-letter:uppercase">{smp.scenario ?? prettySample(smp.name)}</span>
+                    {smp.expected && <span className="block text-xs text-[#5e5230]">Should {EXPECTED_LABEL[smp.expected]}</span>}
+                  </span>
                   <ArrowRight className="size-4 text-rule group-hover:text-carbon" />
                 </button>
               </li>

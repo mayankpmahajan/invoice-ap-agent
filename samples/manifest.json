@@ -1,0 +1,42 @@
+{
+  "01_happy_northwind.pdf": {
+    "expected": "approved",
+    "scenario": "Clean invoice, explicit PO"
+  },
+  "02_split_meridian_part1.pdf": {
+    "expected": "approved",
+    "scenario": "Split PO, part 1: 60 of 100 units"
+  },
+  "03_split_meridian_part2.pdf": {
+    "expected": "needs_review",
+    "scenario": "Split PO, part 2: 50 more units, over-bills"
+  },
+  "04_scanned_brightline_no_po.pdf": {
+    "expected": "approved",
+    "scenario": "Scan with no PO number: PO inferred"
+  },
+  "05_duplicate_northwind_resend.pdf": {
+    "expected": "rejected",
+    "scenario": "01 re-sent as a scan, number reformatted"
+  },
+  "06_bank_change_cobalt.pdf": {
+    "expected": "needs_review",
+    "scenario": "Amounts match, bank account changed"
+  },
+  "07_price_close_northwind.pdf": {
+    "expected": "approved",
+    "scenario": "Price 1.25% over the PO: inside tolerance"
+  },
+  "08_price_over_northwind.pdf": {
+    "expected": "needs_review",
+    "scenario": "Price 13.7% over the PO: beyond tolerance"
+  },
+  "09_scanned_missing_number_brightline.pdf": {
+    "expected": "needs_review",
+    "scenario": "Scan with no invoice number"
+  },
+  "10_bundled_vat_inclusive_cobalt.pdf": {
+    "expected": "needs_review",
+    "scenario": "One bundled line, VAT inside the price"
+  }
+}
