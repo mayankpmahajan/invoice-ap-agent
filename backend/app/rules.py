@@ -164,6 +164,17 @@ def net_amount(ex: InvoiceExtraction) -> float | None:
     return None
 
 
+def tax_inclusive_net_share(ex: InvoiceExtraction) -> float | None:
+    """For tax-inclusive line prices: the share of each price that is net of tax (net / gross), from the invoice's
+    own printed tax and total. None when prices exclude tax, or the invoice does not show enough to derive it."""
+    if not ex.amounts_include_tax:
+        return None
+    gross, tax = ex.total.value, ex.tax_amount.value
+    if not gross or tax is None or not 0 <= tax < gross:
+        return None
+    return (gross - tax) / gross
+
+
 # ------------------------------------------------------------------ checks: the document itself
 def check_document_type(ex: InvoiceExtraction) -> Check:
     t = ex.document_type
@@ -357,6 +368,7 @@ def check_lines_against_po(po: PORec | None, ex: InvoiceExtraction, line_map: li
     if not ex.line_items:
         detail_issues.append("the invoice has no line items, so nothing can be checked against the PO")
     this_qty: dict[str, float] = {}
+    net_share = tax_inclusive_net_share(ex)
     for i, (li, lid) in enumerate(zip(ex.line_items, line_map), 1):
         if li.quantity is None or li.unit_price is None:
             detail_issues.append(f"line {i} '{li.description}' has no {'quantity' if li.quantity is None else 'unit price'}"
@@ -370,9 +382,12 @@ def check_lines_against_po(po: PORec | None, ex: InvoiceExtraction, line_map: li
         # Tolerance applies to the line's money at stake (qty x price), not to the unit price alone.
         q = li.quantity or 0
         if li.unit_price is not None and q:
-            variance = q * (li.unit_price - pl.unit_price)
-            note = f"line {i}: billed {li.unit_price} vs PO {pl.unit_price} ({q:g} units, {variance:+,.2f})"
-            if not within_tolerance(q * li.unit_price, q * pl.unit_price):
+            # POs are pre-tax: a tax-inclusive price is compared net of the invoice's own tax share.
+            unit = round(li.unit_price * net_share, 4) if net_share is not None else li.unit_price
+            variance = q * (unit - pl.unit_price)
+            billed = f"{li.unit_price} incl. tax ({unit:g} net)" if net_share is not None else f"{li.unit_price}"
+            note = f"line {i}: billed {billed} vs PO {pl.unit_price} ({q:g} units, {variance:+,.2f})"
+            if not within_tolerance(q * unit, q * pl.unit_price):
                 price_issues.append(note)
             elif abs(variance) > settings.ARITHMETIC_SLACK:
                 price_notes.append(note)
