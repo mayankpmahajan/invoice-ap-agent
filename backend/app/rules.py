@@ -87,10 +87,12 @@ def norm_account(s: str | None) -> str:
 
 
 def within_tolerance(actual: float, expected: float) -> bool:
+    """Within BOTH bounds (the lesser of TOLERANCE_PCT and TOLERANCE_ABS). Either-bound let small lines through
+    at many times the PO price (a 4.75 item billed at 54 is under 50 absolute) and large lines drift unbounded."""
     diff = abs(actual - expected)
-    if diff <= settings.TOLERANCE_ABS:
+    if diff <= settings.ARITHMETIC_SLACK:  # rounding, not a variance
         return True
-    return expected != 0 and diff / abs(expected) * 100 <= settings.TOLERANCE_PCT
+    return expected != 0 and diff <= settings.TOLERANCE_ABS and diff / abs(expected) * 100 <= settings.TOLERANCE_PCT
 
 
 def parse_date(s: str | None) -> date | None:
@@ -287,7 +289,7 @@ def check_lines_against_po(po: PORec | None, ex: InvoiceExtraction, line_map: li
     checks = [
         Check("price_variance", "Prices within tolerance", "review" if price_issues else "pass",
               "; ".join(price_issues) if price_issues else
-              f"All unit prices within {settings.TOLERANCE_PCT:g}% / {settings.TOLERANCE_ABS:g} of the PO."),
+              f"Every line within {settings.TOLERANCE_PCT:g}% and {settings.TOLERANCE_ABS:g} of the PO price."),
     ]
     if unmapped:
         checks.append(Check("line_mapping", "Every line is on the PO", "review",

@@ -40,10 +40,12 @@ def test_invoice_number_normalisation_ignores_formatting():
     assert rules.norm_invoice_number("INV-0042") != rules.norm_invoice_number("INV-0043")
 
 
-def test_tolerance_either_bound():
-    assert rules.within_tolerance(1040, 1000)        # 4% but within 50 absolute
-    assert rules.within_tolerance(10150, 10000)      # 1.5%
-    assert not rules.within_tolerance(10300, 10000)  # 3% and 300 absolute
+def test_tolerance_needs_both_bounds():
+    assert rules.within_tolerance(1015, 1000)        # 1.5% and 15 absolute
+    assert not rules.within_tolerance(1040, 1000)    # within 50 absolute but 4%
+    assert not rules.within_tolerance(10150, 10000)  # 1.5% but 150 absolute
+    assert not rules.within_tolerance(54.0, 4.75)    # one item at ~11x the PO price, under 50 absolute
+    assert rules.within_tolerance(100.01, 100.0)     # rounding
 
 
 def test_split_po_within_balance_passes_and_overbilling_is_held():
