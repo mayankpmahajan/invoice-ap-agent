@@ -287,5 +287,12 @@ if FRONTEND_DIST.exists():  # single-process deploy: serve the built UI
 
     @app.get("/{path:path}", include_in_schema=False)
     async def spa(path: str):
-        f = FRONTEND_DIST / path
-        return FileResponse(f if path and f.is_file() else FRONTEND_DIST / "index.html")
+        return FileResponse(dist_file(FRONTEND_DIST, path))
+
+
+def dist_file(root: Path, path: str) -> Path:
+    """The built-UI file for a URL path, else index.html (client-side routes). Resolved first, then required to
+    stay inside the UI folder: "../" or "%2e%2e" must never reach the .env, the database or uploaded invoices."""
+    root = root.resolve()
+    f = (root / path).resolve()
+    return f if path and f.is_relative_to(root) and f.is_file() else root / "index.html"
